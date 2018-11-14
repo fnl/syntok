@@ -10,7 +10,7 @@ __PARAGRAPH_SEP = regex.compile("\r?\n(?:\s*\r?\n)+")
 
 def analyze(document: str) -> Iterator[Iterator[List[Token]]]:
     """
-    Split a document into paragraphs, sentences, and tokens,
+    Segment a document into paragraphs, sentences, and tokens,
     all the while preserving the offsets of the tokens in the text.
 
     :param document: to process
@@ -25,7 +25,7 @@ def analyze(document: str) -> Iterator[Iterator[List[Token]]]:
 
 def process(document: str) -> Iterator[Iterator[List[Token]]]:
     """
-    Split a document into paragraphs, sentences, and tokens.
+    Segment a document into paragraphs, sentences, and tokens.
 
     Note that hyphenated words at linebreaks are joined if appropriate and therefore
 
