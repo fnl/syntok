@@ -1,0 +1,46 @@
+The first line is the input.
+The first line is the input .
+The second line is the tokenized output.
+The second line is the tokenized output .
+This is the first sentence. This is the second one.
+This is the first sentence . This is the second one .
+Got it? Yeah!
+Got it ? Yeah !
+However, hyphenated-words-are-split.
+However , hyphenated words are split .
+And words with under_scores.
+And words with under scores .
+Even CamelCaseWords are split.
+Even Camel Case Words are split .
+Mr. Ronald came by.
+Mr . Ronald came by .
+Web addresses http://www.google.com/ and e-mails me@xml.es are not.
+Web addresses http://www.google.com / and e mails me@xml.es are not .
+Neither are K&R mentions.
+Neither are K&R mentions .
+We'll see her's too.
+We 'll see her 's too .
+did n't he go?
+did not he go ?
+Keep A.B. acronyms U.S.A. With nice U.S.A..
+Keep A.B . acronyms U.S.A . With nice U.S.A . .
+1 , r-4-cyclo.hexene modification of 5′-ATGCAAAT-3′ and 5'-ACGT-3' sequences in-vivo.
+1 , r 4 cyclo.hexene modification of 5′-ATGCAAAT 3 ′ and 5'-ACGT 3 ' sequences in vivo .
+Lalala... or Lala Land....
+Lalala . . . or Lala Land . . . .
+'tis she'll shouldn't it?
+' tis she 'll should not it ?
+Dates 2018-12-10 and 10.12.2018 or times as 12:10:22 and 1_000 plus 1..2.
+Dates 2018-12-10 and 10.12.2018 or times as 12:10:22 and 1_000 plus 1..2 .
+Numbers 123,456.78 or sci 10.3e10 kg/meter and 3^4 and money $12mm or €12.000,00.
+Numbers 123,456.78 or sci 10.3e10 kg/meter and 3^4 and money $ 12mm or € 12.000,00 .
+Weird -usage- of hyphens.
+Weird - usage - of hyphens .
+Split hidden,sentence terminal.Here the user missed,a space.
+Split hidden , sentence terminal . Here the user missed , a space .
+Special a,b a:a b;b a.b A.B and Aa.B and A!B Aa!B and A?A Aa?B
+Special a , b a:a b ; b a.b A.B and Aa . B and A!B Aa ! B and A?A Aa ? B
+Srᵃ “A&D” yes-no CaMel U.S.A. *@#$^%! $10.00 Nº (one_two): a@b.c is 1ᵃ.
+Srᵃ “ A&D ” yes no Ca Mel U.S.A . *@#$^%! $ 10.00 Nº ( one two ) : a@b.c is 1ᵃ .
+ChemForm H₃PO₅ with H₁₂O₆.
+Chem Form H₃PO₅ with H₁₂O₆ .
