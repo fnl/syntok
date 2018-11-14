@@ -7,8 +7,6 @@ syntok
 .. image:: https://img.shields.io/pypi/v/syntok.svg
     :target: https://pypi.python.org/pypi/syntok
 
-.. image:: https://img.shields.io/pypi/l/syntok.svg
-
 .. image:: https://travis-ci.org/fnl/syntok.svg?branch=master
     :target: https://travis-ci.org/fnl/syntok
 
