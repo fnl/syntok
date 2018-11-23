@@ -139,7 +139,7 @@ Copyright (c) 2017-2018, Florian Leitner. All rights reserved.
 History
 =======
 
--operate  **1.0.2** hyphen joining only should happen when letters are present; squash escape warnings
+- **1.0.2** hyphen joining only should happen when letters are present; squash escape warnings
 - **1.0.1** fixing segmenter.analyze to preserve "n't" contractions, and improved the README and Tokenizer constructor API
 - **1.0.0** initial release
 
