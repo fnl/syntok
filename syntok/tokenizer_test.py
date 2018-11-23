@@ -33,7 +33,7 @@ class TestTokenizer(TestCase):
         self.assertFalse(error)
 
     def test_clean_text(self):
-        self.assertEqual("He3#o", Tokenizer.join_hyphenated_words_across_linebreaks("He3- \n  #o"))
+        self.assertEqual("He3ll#o", Tokenizer.join_hyphenated_words_across_linebreaks("He3l- \n  l#o"))
 
     def test_clean_text_Unicode(self):
         for h in Tokenizer._hyphens:

@@ -87,7 +87,7 @@ Basic example::
    from syntok.tokenizer import Tokenizer
 
    document = open('README.rst').read()
-   tok = Tokenizer()  # optional: configuration
+   tok = Tokenizer()  # optional: keep "n't" contractions and "-", "_" inside words as tokens
 
    for token in tok.tokenize(document):
        print(repr(token))
@@ -139,6 +139,7 @@ Copyright (c) 2017-2018, Florian Leitner. All rights reserved.
 History
 =======
 
+-operate  **1.0.2** hyphen joining only should happen when letters are present; squash escape warnings
 - **1.0.1** fixing segmenter.analyze to preserve "n't" contractions, and improved the README and Tokenizer constructor API
 - **1.0.0** initial release
 

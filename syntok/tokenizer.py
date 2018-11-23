@@ -74,7 +74,7 @@ class Tokenizer:
     _hyphens_and_underscore = frozenset(_hyphens + "_")
     """The set of all hyphen Unicode chars and the underscore."""
 
-    _hyphen_newline = regex.compile("(?<=\S)[" + _hyphens + "][ \t\u00a0\r]*\n[ \t\u00a0]*(?=\S)")
+    _hyphen_newline = regex.compile(r"(?<=\p{L})[" + _hyphens + "][ \t\u00a0\r]*\n[ \t\u00a0]*(?=\\p{L})")
     """A token split across a newline with a hyphen marker."""
 
     _apostrophes = "'\u00B4\u02B9\u02BC\u2019\u2032"
@@ -85,14 +85,15 @@ class Tokenizer:
 
     # about 25% of the runtime of the tokenizer is spent with this regex
     _separation = regex.compile(
-        "(?<=\p{Ll})[.!?]?(?=\p{Lu})|" +  # lowercase-uppercase transitions
-        "[" + _apostrophes + "]\p{L}+|" +  # apostrophes and their tail
-        "(?<=\p{L})[,;_" + _hyphens + "](?=[\p{L}\p{Nd}])|" +  # dash-not-digits transition prefix
-        "(?<=[\p{L}\p{Nd}])[,;_" + _hyphens + "](?=\p{L})"  # dash-not-digits transition postfix
+        r"(?<=\p{Ll})[.!?]?(?=\p{Lu})|" +  # lowercase-uppercase transitions
+        r"[" + _apostrophes + r"]\p{L}+|" +  # apostrophes and their tail
+        r"[\p{Ps}\p{Pe}]|" +   # parenthesis and open/close punctuation
+        r"(?<=\p{L})[,;_" + _hyphens + r"](?=[\p{L}\p{Nd}])|" +  # dash-not-digits transition prefix
+        r"(?<=[\p{L}\p{Nd}])[,;_" + _hyphens + r"](?=\p{L})"  # dash-not-digits transition postfix
     )
     """Secondary regex to sub-split non-whitespace sequences."""
 
-    _spaces = regex.compile("\S+", regex.UNICODE)
+    _spaces = regex.compile(r"\S+", regex.UNICODE)
     """Primary regex to split strings at any kind of Unicode whitespace."""
 
     @staticmethod
