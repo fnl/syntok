@@ -139,8 +139,7 @@ Copyright (c) 2017-2018, Florian Leitner. All rights reserved.
 History
 =======
 
-- **1.0.1** fixing segmenter.analyze to preserve "n't" contractions,
-            and improved the README and Tokenizer constructor API
+- **1.0.1** fixing segmenter.analyze to preserve "n't" contractions, and improved the README and Tokenizer constructor API
 - **1.0.0** initial release
 
 .. _segtok: https://github.com/fnl/segtok
