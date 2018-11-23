@@ -97,8 +97,8 @@ class TestToText(TestCase):
 
         self.assertFalse(error)
 
-    def test_lines_emit_true_both(self) -> None:
-        self.tokenizer = Tokenizer(True, True)
+    def test_lines_emit_and_do_not_replace(self) -> None:
+        self.tokenizer = Tokenizer(True, False)
         error = False
 
         for i in range(0, len(self.examples), 2):

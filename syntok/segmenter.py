@@ -13,10 +13,14 @@ def analyze(document: str) -> Iterator[Iterator[List[Token]]]:
     Segment a document into paragraphs, sentences, and tokens,
     all the while preserving the offsets of the tokens in the text.
 
+    Hyphenated words at linebreaks are still treated as two separate
+    tokens when using this function, and the original input document
+    `str` value is producible from the `Token` spacing and values.
+
     :param document: to process
     :return: an iterator over paragraphs and sentences as lists of tokens
     """
-    tok = Tokenizer()
+    tok = Tokenizer(replace_not_contraction=False)
 
     for offset, paragraph in preprocess_with_offsets(document):
         tokens = tok.tokenize(paragraph, offset)
@@ -27,7 +31,9 @@ def process(document: str) -> Iterator[Iterator[List[Token]]]:
     """
     Segment a document into paragraphs, sentences, and tokens.
 
-    Note that hyphenated words at linebreaks are joined if appropriate and therefore
+    Note that hyphenated words at linebreaks are joined and
+    negation contractions ("don't") are replaced with "do" and "not",
+    therefore the original input document might not be reproducible.
 
     :param document: to process
     :return: an iterator over paragraphs and sentences as lists of tokens
@@ -35,8 +41,7 @@ def process(document: str) -> Iterator[Iterator[List[Token]]]:
     tok = Tokenizer()
 
     for paragraph in preprocess(document):
-        clean_para = paragraph.replace("\n", " ")
-        yield segment(tok.tokenize(clean_para))
+        yield segment(tok.tokenize(paragraph))
 
 
 def preprocess(text: str) -> List[str]:

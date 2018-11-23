@@ -82,6 +82,18 @@ Finally, as it splits English negation contractions (such as "don't") into their
 
 To track the spacing and offset of tokens, the module contains the ``Token`` class, which is a ``str`` wrapper class where the token **value** itself is available from the ``value`` property and adding a ``spacing`` and a ``offset`` property that will hold the **spacing** prefix and the **offset** position of the token, respectively.
 
+Basic example:
+
+```python
+from syntok.tokenizer import Tokenizer
+
+document = open('README.rst').read()
+tok = Tokenizer()  # optional: configuration
+
+for token in tok.tokenize(document):
+    print(repr(token))
+```
+
 ``syntok.segmenter``
 --------------------
 
@@ -91,6 +103,34 @@ All segmenter functions accept arbitrary Token streams as input (typically as ge
 Due to how ``syntok.tokenizer.Token`` objects "work", it is possible to establish the exact sentence content (with the original spacing between the tokens).
 The pre-processing functions and paragraph-based segmentation splits paragraphs, i.e., chunks of text separated by at least two consecutive linebreaks (``\\r?\\n``).
 
+Basic example:
+
+```python
+import syntok.segmenter as segmenter
+
+document = open('README.rst').read()
+
+# choose the segmentation function you need/prefer
+
+for paragraph in segmenter.process(document):
+    for sentence in paragraph:
+        for token in sentence:
+            # roughly reproduce the input,
+            # except for hyphenated word-breaks
+            # and replacing "n't" contractions with "not",
+            # separating tokens by single spaces
+            print(token.value, end=' ')
+        print()  # print one sentence per line
+    print()  # separate paragraphs with newlines
+
+for paragraph in segmenter.analyze(document):
+    for sentence in paragraph:
+        for token in sentence:
+            # exactly reproduce the input
+            # and do not remove "imperfections"
+            print(token.spacing, token.value, sep='', end='')
+    print("\n")  # reinsert paragraph separators
+```
 
 Legal
 =====
@@ -103,6 +143,8 @@ Copyright (c) 2017-2018, Florian Leitner. All rights reserved.
 History
 =======
 
+- **1.0.1** fixing segmenter.analyze to preserve "n't" contractions,
+            and improved the README and Tokenizer constructor API
 - **1.0.0** initial release
 
 .. _segtok: https://github.com/fnl/segtok

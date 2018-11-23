@@ -26,9 +26,9 @@ class Token:
         self._offset = offset
 
     def __repr__(self) -> str:
-        return "<Token '%s' : '%s' @ %d>" % (
-            self._spacing.replace("'", "\\'"),
-            self._value.replace("'", "\\'"),
+        return "<Token %s : %s @ %d>" % (
+            repr(self._spacing),
+            repr(self._value),
             self._offset
         )
 
@@ -74,7 +74,7 @@ class Tokenizer:
     _hyphens_and_underscore = frozenset(_hyphens + "_")
     """The set of all hyphen Unicode chars and the underscore."""
 
-    _hyphen_newline = regex.compile("(?<=\S)[" + _hyphens + "]\s*\n\s*(?=\S)")
+    _hyphen_newline = regex.compile("(?<=\S)[" + _hyphens + "][ \t\u00a0\r]*\n[ \t\u00a0]*(?=\S)")
     """A token split across a newline with a hyphen marker."""
 
     _apostrophes = "'\u00B4\u02B9\u02BC\u2019\u2032"
@@ -109,18 +109,21 @@ class Tokenizer:
         """
         return "".join(map(str, tokens))
 
-    def __init__(self, emit_hyphen_or_underscore_sep: bool = False, emit_not_contraction: bool = False):
+    def __init__(
+        self, emit_hyphen_or_underscore_sep: bool = False, replace_not_contraction: bool = True
+    ):
         """
         Set tuning options around hyphens & underscores, and "n't" contractions.
 
         Note that hyphens and underscores are, if not emitted,
-        set as the `Token.spacing` values.
+        set as the `Token.spacing` values, but they are never "lost".
 
-        :param emit_hyphen_or_underscore_sep: if found as single char inside words
-        :param emit_not_contraction: instead of replacing it with "not"
+        :param emit_hyphen_or_underscore_sep: as separate tokens
+                                              if found as single char inside words
+        :param replace_not_contraction: replace "n't" with "not" (by default)
         """
         self.emit_hyphen_underscore_sep = emit_hyphen_or_underscore_sep
-        self.emit_not_contraction = emit_not_contraction
+        self.replace_not_contraction = replace_not_contraction
 
     def split(self, text: str) -> List[Token]:
         """Extract the list of Tokens from `text`."""
@@ -209,7 +212,7 @@ class Tokenizer:
                     yield Token(prefix, word[remainder:mo.start() - 1], offset + remainder)
                     prefix = ""
 
-                yield Token(prefix, 'n' + mo.group(0) if self.emit_not_contraction else "not", offset + mo.start())
+                yield Token(prefix, "not" if self.replace_not_contraction else 'n' + mo.group(0), offset + mo.start())
                 return ""
 
             yield Token(prefix, word[remainder:mo.start()], offset + remainder)

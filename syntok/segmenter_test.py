@@ -243,7 +243,7 @@ class TestPreprocess(TestCase):
         self.assertListEqual([(0, " ab"), (6, " cd- "), (14, " ef "), (20, "")], result)
 
     def test_preprocess(self):
-        text = " ab\n \n  cd- \n\n ef \n\n"
+        text = " ab\n \n  cd- \n ef \n\n"
         result = segmenter.preprocess(text)
         self.assertListEqual([" ab", "  cdef ", ""], result)
 
