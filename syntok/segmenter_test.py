@@ -87,6 +87,7 @@ Am 13. Jän. 2006 war es regnerisch.
 The administrative basis for Lester B. Pearson's foreign policy was developed later.
 This model was introduced by Dr. Edgar F. Codd after initial criticisms.
 This quote "He said it." is actually inside.
+B. Obama fas the first black US president.
 A. The first assumption.
 B. The second bullet.
 C. The last case.
