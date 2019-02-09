@@ -14,10 +14,10 @@ class TestTokenizer(TestCase):
     def setUp(self) -> None:
         self.tokenizer = Tokenizer()
 
-        with open(os.path.dirname(__file__) + '/tokenizer_test.txt', 'rt') as examples:
+    def test_lines(self) -> None:
+        with open(os.path.dirname(__file__) + '/tokenizer_test.txt', 'rt', encoding='utf-8') as examples:
             self.examples = examples.readlines()
 
-    def test_lines(self) -> None:
         error = False
 
         for i in range(0, len(self.examples), 2):
@@ -78,7 +78,7 @@ class TestTokenizer(TestCase):
 class TestToText(TestCase):
 
     def setUp(self) -> None:
-        with open(os.path.dirname(__file__) + '/tokenizer_test.txt', 'rt') as examples:
+        with open(os.path.dirname(__file__) + '/tokenizer_test.txt', 'rt', encoding='utf-8') as examples:
             self.examples = examples.readlines()
 
     def test_lines(self) -> None:
