@@ -88,7 +88,7 @@ class Tokenizer:
         r"(?<=\p{Ll})[.!?]?(?=\p{Lu})|" +  # lowercase-uppercase transitions
         r"[" + _apostrophes + r"]\p{L}+|" +  # apostrophes and their tail
         r"[\p{Ps}\p{Pe}]|" +   # parenthesis and open/close punctuation
-        r"\.\.\.|" + # inner ellipsis
+        r"\.\.\.|" +  # inner ellipsis
         r"(?<=\p{L})[,;_" + _hyphens + r"](?=[\p{L}\p{Nd}])|" +  # dash-not-digits transition prefix
         r"(?<=[\p{L}\p{Nd}])[,;_" + _hyphens + r"](?=\p{L})"  # dash-not-digits transition postfix
     )
