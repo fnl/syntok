@@ -11,7 +11,7 @@ class State(metaclass=ABCMeta):
     closing_quotes = frozenset("'\"\u00B4\u2019\u201D\u232A\u27E9\u27EB\u2E29\u3009\u300B\u301E")
     """All possible closing quotes that can follow a terminal and still belong to the sentence."""
 
-    terminals = frozenset(".!?\u203C\u203D\u2047\u2048\u2049\u3002\uFE52\uFE57\uFF01\uFF0E\uFF1F\uFF61")
+    terminals = frozenset({"..."} | set(".!?\u203C\u203D\u2047\u2048\u2049\u3002\uFE52\uFE57\uFF01\uFF0E\uFF1F\uFF61"))
     """All possible terminal markers."""
 
     __vowels = "aeiouáéííóúäëïöüåæø"

@@ -74,6 +74,11 @@ class TestTokenizer(TestCase):
         reconstruction = "".join(map(str, output))
         self.assertEqual(text, reconstruction)
 
+    def test_inner_ellipsis(self):
+        text = "Lalala...or Lala Land...."
+        result = self.tokenizer.split(text)
+        self.assertListEqual(s(result), ["Lalala", "...", "or", "Lala", "Land", "...", "."])
+
 
 class TestToText(TestCase):
 

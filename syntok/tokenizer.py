@@ -88,6 +88,7 @@ class Tokenizer:
         r"(?<=\p{Ll})[.!?]?(?=\p{Lu})|" +  # lowercase-uppercase transitions
         r"[" + _apostrophes + r"]\p{L}+|" +  # apostrophes and their tail
         r"[\p{Ps}\p{Pe}]|" +   # parenthesis and open/close punctuation
+        r"\.\.\.|" + # inner ellipsis
         r"(?<=\p{L})[,;_" + _hyphens + r"](?=[\p{L}\p{Nd}])|" +  # dash-not-digits transition prefix
         r"(?<=[\p{L}\p{Nd}])[,;_" + _hyphens + r"](?=\p{L})"  # dash-not-digits transition postfix
     )
@@ -151,7 +152,14 @@ class Tokenizer:
                 if start != end:
                     yield from self._split_word(text[offset:start], text[start:end], start)
 
-                yield from [Token("", c, idx + end) for idx, c in enumerate(text[end:mo.end()])]
+                tail = text[end:mo.end()]
+
+                if tail.startswith("..."):
+                    yield Token("", "...", end)
+                    end += 3
+                    tail = tail[3:]
+
+                yield from [Token("", c, idx + end) for idx, c in enumerate(tail)]
 
             offset = mo.end()
 
