@@ -69,7 +69,7 @@ The U.S. Air Force was called in.
 What about the E.U. High Court?
 And then there is the U.K. House of Commons.
 Now only this splits: the EU.
-A sentence ending in U.S. Another that won't split.
+A sentence ending in U.S. Another that will not split.
 12 monkeys ran into here.
 Nested (Parenthesis.
 (With words inside!
@@ -77,14 +77,13 @@ Nested (Parenthesis.
 (More stuff.
 Uff, this is it!))
 In the Big City.
-How we got an A.
-Mathematics . dot times.
+How we got an A. Mathematics . dot times.
 An abbreviation at the end..
 This is a sentence terminal ellipsis...
 This is another sentence terminal ellipsis....
 An easy to handle G. species mention.
 Am 13. Jän. 2006 war es regnerisch.
-The administrative basis for Lester B. Pearson's foreign policy was developed later.
+The basis for Lester B. Pearson's policy was later.
 This model was introduced by Dr. Edgar F. Codd after initial criticisms.
 This quote "He said it." is actually inside.
 B. Obama fas the first black US president.
@@ -94,6 +93,47 @@ C. The last case.
 1. This is one.
 2. And that is two.
 3. Finally, three, too.
+A 130 nm CMOS power amplifier (PA) operating at 2.4 GHz.
+Its power stage is composed of a set of amplifying cells.
+Specimens (n = 32) were sent for 16S rRNA PCR.
+16S rRNA PCR could identify an organism in 10 of 32 cases (31.2%).
+Cannabis sativa subsp. sativa at Noida was also confirmed.
+Eight severely CILY-affected villages of Grand-Lahou in 2015.
+Leaves, inflorescences and trunk borings were collected.
+Disturbed the proper intracellular localization of TPRBK.
+Moreover, the knockdown of TPRBK expression.
+Elevated expression of LC3.
+Importantly, immunohistochemistry analysis revealed it.
+Bacterium produced 45U/mL -mannanase at 50 degrees C.
+The culture conditions for high-level production.
+Integration (e.g., on-chip etc.), can translate to lower cost.
+The invasive capacity of S. Typhi is high.
+Most pRNAs have a length of 8-15 nt, very few up to 24 nt.
+The average length of pRNAs tended to increase from stationary to outgrowth conditions.
+Results: In AAA, significantly enhanced mRNA expression was observed (p <= .001).
+MMPs with macrophages (p = .007, p = .018, and p = .015, resp.).
+And synth. muscle cells with MMPs (p = .020, p = .018, and p = .027, respectively).
+(C) 2017 Company Ltd.
+All rights reserved.
+(C) 2017 Company B.V.
+All rights reserved.
+Northern blotting and RT-PCR.
+C2m9 and C2m45 carried missense mutations.
+The amplifier consumes total DC power of 167 uW.
+The input-referred noise is 110 nV/sqrt(Hz).
+Inflammation via activation of TLR4.
+We also identify a role for TLR4.
+Effects larger (eta(2) = .53), with cognition (eta(2) = .14) and neurocognition (eta(2) = .16).
+All validations show a good approximation of the behavior of the DMFC.
+In addition, a simulated application of a circuit system is explained.
+Conclusions: Our data suggest CK5/6, CK7, and CK18 in the subclassification of NSCLC.
+Copyright (C) 2018 S. Korgur AG, Basel.
+Gelatin degradation by MMP-9.
+ConclusionThis study provides clear evidence.
+A sampling frequency of 780 MHz.
+The figure-of-merit of the modulator is there.
+Patients with prodromal DLB.
+In line with the literature on DLB.
 Always last, clear closing example."""
 
 SENTENCES = OSPL.split('\n')
@@ -105,7 +145,16 @@ SEGMENTED_TOKENS = [TOKENIZER.split(t) for t in SENTENCES]
 class TestSegmenter(TestCase):
 
     def test_segmenter(self):
-        self.assertSequenceEqual(SEGMENTED_TOKENS, segmenter.split(TOKENIZER.tokenize(TEXT)))
+        def make_sentences(segmented_tokens):
+            for sentence in segmented_tokens:
+                yield "".join(str(token) for token in sentence).strip()
+
+        self.maxDiff = None
+        expected = "\n".join(make_sentences(SEGMENTED_TOKENS))
+        received = "\n".join(make_sentences(segmenter.split(TOKENIZER.tokenize(TEXT))))
+        assert expected == OSPL
+        assert expected == received
+        assert SEGMENTED_TOKENS == segmenter.split(TOKENIZER.tokenize(TEXT))
 
     def test_simple(self):
         tokens = list(map(lambda v: Token('', v, 0), ["This", "is", "a", "sentence", "."]))
@@ -218,10 +267,16 @@ class TestSegmenter(TestCase):
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens[:sep], tokens[sep:]], result)
 
+    def test_sentences_with_letter_enumerations(self):
+        tokens = Tokenizer().split('A. This goes first. B. And here thereafter.')
+        sep = 6
+        result = segmenter.split(iter(tokens))
+        self.assertEqual([tokens[:sep], tokens[sep:]], result)
+
     def test_one_word_sentences(self):
         tokens = Tokenizer().split('Who did this? I. No! Such a shame.')
         result = segmenter.split(iter(tokens))
-        self.assertEqual([tokens[:4], tokens[4:6], tokens[6:8], tokens[8:]], result)
+        self.assertEqual([tokens[:4], tokens[4:8], tokens[8:]], result)
 
     def test_brackets_before_the_terminal(self):
         tokens = Tokenizer().split("Brackets before the terminal [2]. You know I told you so.")
@@ -234,6 +289,51 @@ class TestSegmenter(TestCase):
         sep = 9
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens[:sep], tokens[sep:]], result)
+
+    def test_sentence_ends_in_abbreviation(self):
+        tokens = Tokenizer().split("operating at 2.4 GHz. Its power stage")
+        sep = 5
+        result = segmenter.split(iter(tokens))
+        self.assertEqual([tokens[:sep], tokens[sep:]], result)
+
+    def test_sentence_ends_in_single_letter_and_starts_with_starter_word(self):
+        tokens = Tokenizer().split("got an A. And then he")
+        sep = 4
+        result = segmenter.split(iter(tokens))
+        self.assertEqual([tokens[:sep], tokens[sep:]], result)
+
+    def test_split_with_dot_following_abbreviation(self):
+        tokens = Tokenizer().split("in the E.U.. But they are")
+        sep = 5
+        result = segmenter.split(iter(tokens))
+        self.assertEqual([tokens[:sep], tokens[sep:]], result)
+
+    def test_split_with_complext_abbreviation_pattern(self):
+        tokens = Tokenizer().split("resp.). Indicate")
+        sep = 4
+        result = segmenter.split(iter(tokens))
+        self.assertEqual([tokens[:sep], tokens[sep:]], result)
+
+    def test_sentence_with_abbreviation_indictated_by_punctuation(self):
+        tokens = Tokenizer().split("Don't splt., please!")
+        result = segmenter.split(iter(tokens))
+        self.assertEqual([tokens], result)
+
+    def test_sentence_with_abbreviation_with_dot(self):
+        tokens = Tokenizer().split("The U.S. Air Force is here.")
+        result = segmenter.split(iter(tokens))
+        self.assertEqual([tokens], result)
+
+    def test_sentence_with_single_letter_abbreviation(self):
+        tokens = Tokenizer().split("The basis for Lester B. Pearson's policy was later.")
+        result = segmenter.split(iter(tokens))
+        self.assertEqual([tokens], result)
+
+    def test_sentence_with_single_letter_at_end(self):
+        # Sadly, this one cannot split if we want to capture author abbreviations
+        tokens = Tokenizer().split("got an A. Mathematics was")
+        result = segmenter.split(iter(tokens))
+        self.assertEqual([tokens], result)
 
 
 class TestPreprocess(TestCase):

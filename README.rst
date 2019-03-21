@@ -139,6 +139,7 @@ Copyright (c) 2017-2018, Florian Leitner. All rights reserved.
 History
 =======
 
+- **1.1.1** fixed non-trivial segmentation in sci. text and refactored splitting logic to one place only
 - **1.1.0** added support for ellipses (back - from segtok) in
 - **1.0.2** hyphen joining only should happen when letters are present; squash escape warnings
 - **1.0.1** fixing segmenter.analyze to preserve "n't" contractions, and improved the README and Tokenizer constructor API

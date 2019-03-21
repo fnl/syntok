@@ -18,12 +18,37 @@ class State(metaclass=ABCMeta):
     vowels = frozenset(__vowels + __vowels.upper())
     """All vowels with accents and umlauts."""
 
-    abbreviations = frozenset("""
-    ave Ave adm Adm ap approx Approx capt Capt col Col fig Fig figs Figs gal gen Gen
-    mag Mag med Med nat Nat phil prof Prof rer Rer sci Sci Sra Srta univ Univ vol Vol
-    Jän Jan Ene Feb Mär Mar Apr Abr May Jun Jul Aug Sep Sept Oct Okt Nov Dic Dez Dec
+    inner_sentence_punctuation = frozenset(",;:")
+
+    months = frozenset("""
+    Jän Jan en ene Ene feb febr Feb Mär Mar mzo Mzo Apr abr abl Abr may May jun Jun
+    jul Jul ago agto Aug sep Sep sept Sept setbre set oct octbre Oct Okt nov novbre Nov dic dicbre Dic Dez Dec
     """.split())
-    """Abbreviations with no dots and at least some vowels inside."""
+
+    abbreviations = frozenset("""
+    Abb adm Adm Abs afmo alt Alt Anl ap apdo approx Approx art Art atte atto Aufl ave Ave Az
+    bmo Bmo brig Bd Brig bsp Bsp bspw bzgl bzw ca cap capt Capt cf cmdt Cmdt cnel Cnel Co col Col Corp
+    de Dr dgl dt emp en es etc evtl excl exca Exca excmo Excmo exsmo Exsmo ff fig Fig figs Figs fr Fr
+    gal gen Gen ggf gral Gral GmbH gob Gob Hd hno Hno hnos Hnos Inc incl inkl lic Lic lit ldo Ldo Ltd
+    mag Mag max med Med min Mio Mr mr Mrd Mrs mrs Ms ms Mt mt MwSt nat Nat Nr nr ntra Ntra ntro Ntro
+    pag phil prof Prof rer Rer resp sci Sci Sr sr Sra sra Srta srta St st synth tab Tab tel Tel
+    univ Univ Urt vda Vda vol Vol vs vta zB zit zzgl
+    Mon lun Tue mar Wed mie mié Thu jue Fri vie Sat sab Sun dom
+    """.split() + list(months))
+    """Abbreviations with no dots inside."""
+
+    starters = frozenset("""
+    Above Accordingly Additionally Admittedly All Also Although Again And Are As Assuredly Because Besides
+    Certainly Chiefly Comparatively Consequently Conversely Coupled Correspondingly Does Due Especially For Furthermore
+    Granted Generally Hence How However Identically In Indeed Instead It Its Likewise Moreover Nevertheless No
+    Obviously Of On Ordinarily Other Otherwise Outside Particularly Rather
+    Similarly Since Singularly Still So Subsequently That The Therefore Thereupon This Thus Unquestionably Use Usually
+    What Where Whereas Wherefore Why Yet
+    Auch Da Dabei Dadurch Daher Darauf Darum Das Dein Der Deswegen Die Du Ihr Ihnen Er Es Euer
+    Ich Mein Nämlich Sie Sein So Somit Sonst Unser Warum Was Wegen Weil Wer Weshalb Wie Wieso Wir
+    A Algunas Algunos De Desde Debido El Ella En Hay La Las Los No Otra Otro Para Por Porque Se También Todas Todos
+    """.split())
+    """Uppercase words that indicate a sentence start."""
 
     def __init__(self, stream: Iterator[Token], queue: List[Token], history: List[Token]) -> None:
         self.__stream = stream
@@ -91,6 +116,22 @@ class State(metaclass=ABCMeta):
         return not self.is_empty and self.__queue[0].value[:1].islower()
 
     @property
+    def next_is_numeric(self) -> bool:
+        return not self.is_empty and self.__queue[0].value.isnumeric()
+
+    @property
+    def next_is_inner_sentence_punctuation(self) -> bool:
+        return not self.is_empty and self.__queue[0].value in State.inner_sentence_punctuation
+
+    @property
+    def next_is_month_abbreviation(self) -> bool:
+        return not self.is_empty and self.__queue[0].value in State.months
+
+    @property
+    def next_is_sentence_starter(self) -> bool:
+        return not self.is_empty and self.__queue[0].value in State.starters
+
+    @property
     def is_empty(self) -> bool:
         return len(self.__queue) == 0
 
@@ -111,24 +152,60 @@ class State(metaclass=ABCMeta):
         else:
             return True
 
-    def move_and_maybe_extract_terminal(self) -> 'State':
+    def move_and_maybe_extract_terminal(self, is_first_word_in_sentence) -> 'State':
+        # token before the terminal ...
+        token_before = self.last
         self.move()
+        # ... and after the terminal:
+        token_after = self.move_to_next_relevant_word_and_return_token_after_terminal()
 
-        while self.next_is_a_post_terminal_symbol_part_of_sentence:
-            if not self.move():
-                break
-
-        if self.next_is_a_closing_quote and self.next_has_no_spacing:
-            self.move()
-
-        while self.next_is_a_post_terminal_symbol_part_of_sentence:
-            if not self.move():
-                break
-
-        if self.next_is_lowercase:
+        # Now decide whether to split:
+        if self.next_is_lowercase or self.next_is_inner_sentence_punctuation:
+            return self
+        elif not (is_first_word_in_sentence and len(token_before) == 1) and self.next_is_sentence_starter:
+            return Terminal(self._stream, self._queue, self._history)
+        elif token_before in State.abbreviations and token_after not in (self.closing_brackets or self.closing_quotes):
+            return self
+        elif "." in token_before and token_after != ".":
+            return self
+        elif self.next_is_numeric and self.next_has_no_spacing:
+            return self
+        elif token_before.isnumeric() and self.next_is_month_abbreviation:
+            return self
+        elif len(token_before) == 1 and (is_first_word_in_sentence or token_before.isupper()):
             return self
         else:
             return Terminal(self._stream, self._queue, self._history)
+
+    def move_to_next_relevant_word_and_return_token_after_terminal(self):
+        token = None
+        # self.last is supposed to be pointing at the terminal right now
+        assert self.last in State.terminals
+
+        while self.next_is_a_post_terminal_symbol_part_of_sentence:
+            if not self.move():
+                break
+
+            if token is None:
+                token = self.last
+
+        if self.next_is_a_closing_quote and self.next_has_no_spacing:
+            if self.move():
+                if token is None:
+                    token = self.last
+
+        while self.next_is_a_post_terminal_symbol_part_of_sentence:
+            if not self.move():
+                break
+
+            if token is None:
+                token = self.last
+
+        if token is None:
+            token = "" if self.is_empty else self.__queue[0]
+
+        # self.last now is supposed to be at the last token of the current sentence
+        return token
 
     @property
     def last(self) -> str:
@@ -143,15 +220,9 @@ class FirstToken(State):
     def __next__(self) -> State:
         if not self.is_empty or self.fetch_next():
             self.move()
-            last = self.last
 
-            if self.next_is_a_terminal and (not self.next_is_a_potential_abbreviation_marker or (last == "I" or (
-                    len(last) > 1
-                    and last not in State.abbreviations
-                    and "." not in last
-                    and any(c in State.vowels for c in last)
-            ))):
-                return self.move_and_maybe_extract_terminal()
+            if self.next_is_a_terminal:
+                return self.move_and_maybe_extract_terminal(True)
             else:
                 return InnerToken(self._stream, self._queue, self._history)
         else:
@@ -163,15 +234,9 @@ class InnerToken(State):
     def __next__(self) -> State:
         if not self.is_empty or self.fetch_next():
             self.move()
-            last = self.last
 
-            if self.next_is_a_terminal and (not self.next_is_a_potential_abbreviation_marker or (
-                    last not in State.abbreviations and
-                    last not in ("No", "no") and
-                    (last == "." or "." not in last) and
-                    (not last.isalnum() or any(c in State.vowels for c in last))
-            )):
-                return self.move_and_maybe_extract_terminal()
+            if self.next_is_a_terminal:
+                return self.move_and_maybe_extract_terminal(False)
             else:
                 return self
         else:
