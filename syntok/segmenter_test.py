@@ -273,6 +273,12 @@ class TestSegmenter(TestCase):
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens[:sep], tokens[sep:]], result)
 
+    def test_sentences_with_Roman_enumerations(self):
+        tokens = Tokenizer().split('I. This goes first. II. And here thereafter.')
+        sep = 6
+        result = segmenter.split(iter(tokens))
+        self.assertEqual([tokens[:sep], tokens[sep:]], result)
+
     def test_one_word_sentences(self):
         tokens = Tokenizer().split('Who did this? I. No! Such a shame.')
         result = segmenter.split(iter(tokens))

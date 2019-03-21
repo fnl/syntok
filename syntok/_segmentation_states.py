@@ -20,6 +20,10 @@ class State(metaclass=ABCMeta):
 
     inner_sentence_punctuation = frozenset(",;:")
 
+    roman_numerals = frozenset("""
+    I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI XVII XVIII XIX XX XXI XXII XXIII XXIV XXV
+    """.split())
+
     months = frozenset("""
     Jän Jan en ene Ene feb febr Feb Mär Mar mzo Mzo Apr abr abl Abr may May jun Jun
     jul Jul ago agto Aug sep Sep sept Sept setbre set oct octbre Oct Okt nov novbre Nov dic dicbre Dic Dez Dec
@@ -162,9 +166,11 @@ class State(metaclass=ABCMeta):
         # Now decide whether to split:
         if self.next_is_lowercase or self.next_is_inner_sentence_punctuation:
             return self
-        elif not (is_first_word_in_sentence and len(token_before) == 1) and self.next_is_sentence_starter:
+        elif not (is_first_word_in_sentence and self.is_single_letter_or_roman_numeral(token_before)) and \
+                self.next_is_sentence_starter:
             return Terminal(self._stream, self._queue, self._history)
-        elif token_before in State.abbreviations and token_after not in (self.closing_brackets or self.closing_quotes):
+        elif token_before in State.abbreviations and \
+                token_after not in (self.closing_brackets or self.closing_quotes):
             return self
         elif "." in token_before and token_after != ".":
             return self
@@ -172,10 +178,14 @@ class State(metaclass=ABCMeta):
             return self
         elif token_before.isnumeric() and self.next_is_month_abbreviation:
             return self
-        elif len(token_before) == 1 and (is_first_word_in_sentence or token_before.isupper()):
+        elif (is_first_word_in_sentence or token_before.isupper()) and \
+                self.is_single_letter_or_roman_numeral(token_before):
             return self
         else:
             return Terminal(self._stream, self._queue, self._history)
+
+    def is_single_letter_or_roman_numeral(self, token):
+        return len(token) == 1 or token in State.roman_numerals
 
     def move_to_next_relevant_word_and_return_token_after_terminal(self):
         token = None
