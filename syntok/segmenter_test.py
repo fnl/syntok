@@ -345,14 +345,14 @@ class TestSegmenter(TestCase):
 class TestPreprocess(TestCase):
 
     def test_preprocess_with_offsets(self):
-        text = " ab\n \n cd- \n \n ef \n\n"
+        text = " ab\n\u00a0 \n cd- \n ef \n\n g \n \n"
         result = segmenter.preprocess_with_offsets(text)
-        self.assertListEqual([(0, " ab"), (6, " cd- "), (14, " ef "), (20, "")], result)
+        self.assertListEqual([(0, " ab"), (7, " cd- \n ef "), (19, " g "), (25, "")], result)
 
     def test_preprocess(self):
-        text = " ab\n \n  cd- \n ef \n\n"
+        text = " ab\n\u00a0 \n  cd- \n ef \n\n g \n \n"
         result = segmenter.preprocess(text)
-        self.assertListEqual([" ab", "  cdef ", ""], result)
+        self.assertListEqual([" ab", "  cdef ", " g ", ""], result)
 
 
 class TestAnalyze(TestCase):
