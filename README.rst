@@ -25,7 +25,7 @@ While other Indo-European languages could work, it has only been designed with t
 
 Syntok is the successor of an earlier, very similar tool, segtok_, but has evolved significantly in terms of providing better segmentation and tokenization performance and throughput (syntok can segment documents at a rate of about 100k tokens per second without problems).
 For example, if a sentence terminal marker is not followed by a spacing character, segtok is unable to detect that as a terminal marker, while syntok has no problem segmenting that case (as it uses tokenization first, and does segmentation afterwards).
-In fact, I feel confident enough to just boldly claim syntok is the world's best sentence segmenter for at least English, Spanish, and German. :-)
+In fact, I feel confident enough to just boldly claim syntok is the world's best sentence segmenter for at least English, Spanish, and German.
 
 Install
 =======
@@ -133,7 +133,7 @@ Legal
 
 License: `MIT <http://opensource.org/licenses/MIT>`_
 
-Copyright (c) 2017-2018, Florian Leitner. All rights reserved.
+Copyright (c) 2017-2019, Florian Leitner. All rights reserved.
 
 
 History
