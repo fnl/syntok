@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from setuptools import setup
+from setuptools import setup  # type: ignore
 
 try:
     with open('README.rst') as file:
