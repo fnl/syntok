@@ -113,9 +113,8 @@ def segment(tokens: Iterator[Token], bracket_skip_len=None) -> Iterator[List[Tok
                 yield history
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import sys
-
 
     def do(document: str) -> None:
         for paragraph in process(document):
@@ -124,9 +123,8 @@ if __name__ == '__main__':
 
             print("")
 
-
     for filename in sys.argv[1:]:
-        with open(filename, 'rt') as handle:
+        with open(filename, "rt") as handle:
             do(handle.read())
 
     if len(sys.argv) == 1:

@@ -9,7 +9,7 @@ class State(metaclass=ABCMeta):
         "([{\uFF5F\uFF5B\uFF3B\uFF08\uFE5D\uFE5B\uFE59\uFD3E\u301A\u3018\u2985\u2983\u2329"
     )
     """
-    All possible closing brackets that can follow a terminal 
+    All possible closing brackets that can follow a terminal
     and still belong to the sentence.
     """
 
@@ -22,7 +22,7 @@ class State(metaclass=ABCMeta):
         "'\"\u00B4\u2019\u201D\u232A\u27E9\u27EB\u2E29\u3009\u300B\u301E"
     )
     """
-    All possible closing quotes that can follow a terminal 
+    All possible closing quotes that can follow a terminal
     and still belong to the sentence.
     """
 
@@ -37,7 +37,7 @@ class State(metaclass=ABCMeta):
     max_bracket_skipping_length = 70
     """
     Max. num. characters of bracketed text in sentences to ignore when segmenting.
-    
+
     This helps rapidly move over, e.g., citations as in:
     "This was shown by (A. Author et al.) a few months ago."
     Feel free to alter this value if you would prefer a different length.
@@ -276,7 +276,7 @@ class State(metaclass=ABCMeta):
                 or not has_inner_sentence
             ):
                 self.__history.extend(self.__queue[: closing_bracket + 1])
-                self.__queue = self.__queue[closing_bracket + 1 :]
+                self.__queue = self.__queue[closing_bracket + 1:]
                 self._fetch_next()
                 return True
 

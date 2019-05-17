@@ -137,14 +137,13 @@ Patients with prodromal DLB.
 In line with the literature on DLB.
 Always last, clear closing example."""
 
-SENTENCES = OSPL.split('\n')
-TEXT = ' '.join(SENTENCES)
+SENTENCES = OSPL.split("\n")
+TEXT = " ".join(SENTENCES)
 TOKENIZER = Tokenizer()
 SEGMENTED_TOKENS = [TOKENIZER.split(t) for t in SENTENCES]
 
 
 class TestSegmenter(TestCase):
-
     def test_segmenter(self):
         def make_sentences(segmented_tokens):
             for sentence in segmented_tokens:
@@ -158,7 +157,9 @@ class TestSegmenter(TestCase):
         assert SEGMENTED_TOKENS == segmenter.split(TOKENIZER.tokenize(TEXT))
 
     def test_simple(self):
-        tokens = list(map(lambda v: Token('', v, 0), ["This", "is", "a", "sentence", "."]))
+        tokens = list(
+            map(lambda v: Token("", v, 0), ["This", "is", "a", "sentence", "."])
+        )
         # noinspection PyTypeChecker
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens], result)
@@ -233,66 +234,74 @@ class TestSegmenter(TestCase):
         self.assertEqual([tokens[:sep], tokens[sep:]], result)
 
     def test_two_sentences_with_quotes_and_prenthesis_in_both(self):
-        tokens = Tokenizer().split('{"This is a sentence."} ["This is another sentence."]')
+        tokens = Tokenizer().split(
+            '{"This is a sentence."} ["This is another sentence."]'
+        )
         sep = 9
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens[:sep], tokens[sep:]], result)
 
     def test_sentences_with_simple_abbreviations(self):
-        tokens = Tokenizer().split('This is Mr. Motto here. And here is Mrs. Smithers.')
+        tokens = Tokenizer().split("This is Mr. Motto here. And here is Mrs. Smithers.")
         sep = 7
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens[:sep], tokens[sep:]], result)
 
     def test_sentences_with_nasty_abbreviations(self):
-        tokens = Tokenizer().split('This is Capt. Motto here. And here is Sra. Smithers.')
+        tokens = Tokenizer().split(
+            "This is Capt. Motto here. And here is Sra. Smithers."
+        )
         sep = 7
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens[:sep], tokens[sep:]], result)
 
     def test_sentences_with_special_abbreviations(self):
-        tokens = Tokenizer().split('This f.e. here. And here is med. help.')
+        tokens = Tokenizer().split("This f.e. here. And here is med. help.")
         sep = 5
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens[:sep], tokens[sep:]], result)
 
     def test_sentences_with_nasty_special_abbreviations(self):
-        tokens = Tokenizer().split('This f. e. here. And here is unknwn. help.')
+        tokens = Tokenizer().split("This f. e. here. And here is unknwn. help.")
         sep = 7
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens[:sep], tokens[sep:]], result)
 
     def test_sentences_with_enumerations(self):
-        tokens = Tokenizer().split('1. This goes first. 2. And here thereafter.')
+        tokens = Tokenizer().split("1. This goes first. 2. And here thereafter.")
         sep = 6
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens[:sep], tokens[sep:]], result)
 
     def test_sentences_with_letter_enumerations(self):
-        tokens = Tokenizer().split('A. This goes first. B. And here thereafter.')
+        tokens = Tokenizer().split("A. This goes first. B. And here thereafter.")
         sep = 6
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens[:sep], tokens[sep:]], result)
 
     def test_sentences_with_Roman_enumerations(self):
-        tokens = Tokenizer().split('I. This goes first. II. And here thereafter.')
+        tokens = Tokenizer().split("I. This goes first. II. And here thereafter.")
         sep = 6
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens[:sep], tokens[sep:]], result)
 
     def test_one_word_sentences(self):
-        tokens = Tokenizer().split('Who did this? I. No! Such a shame.')
+        tokens = Tokenizer().split("Who did this? I. No! Such a shame.")
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens[:4], tokens[4:8], tokens[8:]], result)
 
     def test_brackets_before_the_terminal(self):
-        tokens = Tokenizer().split("Brackets before the terminal [2]. You know I told you so.")
+        tokens = Tokenizer().split(
+            "Brackets before the terminal [2]. You know I told you so."
+        )
         sep = 8
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens[:sep], tokens[sep:]], result)
 
     def test_sentence_marker_after_abbreviation(self):
-        tokens = Tokenizer().split("Let's meet at 14.10 in N.Y.. This happened in the U.S. last week.")
+        tokens = Tokenizer().split(
+            "Let's meet at 14.10 in N.Y.. This happened in the U.S. last week."
+        )
         sep = 9
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens[:sep], tokens[sep:]], result)
@@ -332,7 +341,9 @@ class TestSegmenter(TestCase):
         self.assertEqual([tokens], result)
 
     def test_sentence_with_single_letter_abbreviation(self):
-        tokens = Tokenizer().split("The basis for Lester B. Pearson's policy was later.")
+        tokens = Tokenizer().split(
+            "The basis for Lester B. Pearson's policy was later."
+        )
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens], result)
 
@@ -358,34 +369,46 @@ class TestSegmenter(TestCase):
         self.assertEqual([tokens], result)
 
     def test_do_not_split_short_text_inside_parenthesis(self):
-        tokens = Tokenizer().split("This is (Proc. ABC with Abs. Reg. Compliance) not here.")
+        tokens = Tokenizer().split(
+            "This is (Proc. ABC with Abs. Reg. Compliance) not here."
+        )
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens], result)
 
     def test_do_not_split_short_text_inside_parenthesis2(self):
-        tokens = Tokenizer().split("This is (Proc. ABC with Abs. Reg. Compliance) not here.")
+        tokens = Tokenizer().split(
+            "This is (Proc. ABC with Abs. Reg. Compliance) not here."
+        )
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens], result)
 
     def test_do_not_split_short_text_inside_parenthesis3(self):
-        tokens = Tokenizer().split("ET in the 112 ER+ patients (HR=2.79 for high CCNE1, p= .005 and .HR=1.97 for CCNE2, p= .05) is wrong.")
+        tokens = Tokenizer().split(
+            "ET in the 112 ER+ patients (HR=2.79 for high CCNE1, p= .005 and .HR=1.97 for CCNE2, p= .05) is wrong."
+        )
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens], result)
 
     def test_do_not_split_short_text_inside_parenthesis4(self):
-        tokens = Tokenizer().split("This was shown by (A. Author et al.) a few months ago.")
+        tokens = Tokenizer().split(
+            "This was shown by (A. Author et al.) a few months ago."
+        )
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens], result)
 
     def test_split_long_text_inside_parenthesis(self):
-        tokens = Tokenizer().split("This is one. (Here is another view of the same. And then there is a different case here.)")
+        tokens = Tokenizer().split(
+            "This is one. (Here is another view of the same. And then there is a different case here.)"
+        )
         sep1 = 4
         sep2 = 13
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens[:sep1], tokens[sep1:sep2], tokens[sep2:]], result)
 
     def test_split_long_text_inside_parenthesis2(self):
-        tokens = Tokenizer().split("This is one (Here is another view of the same. And then there is a different case here.)")
+        tokens = Tokenizer().split(
+            "This is one (Here is another view of the same. And then there is a different case here.)"
+        )
         sep1 = 3
         sep2 = 12
         result = segmenter.split(iter(tokens))
@@ -398,7 +421,11 @@ class TestSegmenter(TestCase):
         self.assertEqual([tokens[:sep], tokens[sep:]], result)
 
     def test_split_with_a_simple_parenthesis_structure(self):
-        tokens = Tokenizer().split('And another sentence on the same line. (How about a sentence in parenthesis?) Or a sentence with "a quote!"')
+        tokens = Tokenizer().split(
+            "And another sentence on the same line. "
+            "(How about a sentence in parenthesis?) "
+            'Or a sentence with "a quote!"'
+        )
         sep1 = 8
         sep2 = 17
         result = segmenter.split(iter(tokens))
@@ -409,12 +436,14 @@ class TestSegmenter(TestCase):
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens], result)
 
-class TestPreprocess(TestCase):
 
+class TestPreprocess(TestCase):
     def test_preprocess_with_offsets(self):
         text = " ab\n\u00a0 \n cd- \n ef \n\n g \n \n"
         result = segmenter.preprocess_with_offsets(text)
-        self.assertListEqual([(0, " ab"), (7, " cd- \n ef "), (19, " g "), (25, "")], result)
+        self.assertListEqual(
+            [(0, " ab"), (7, " cd- \n ef "), (19, " g "), (25, "")], result
+        )
 
     def test_preprocess(self):
         text = " ab\n\u00a0 \n  cd- \n ef \n\n g \n \n"
@@ -423,7 +452,6 @@ class TestPreprocess(TestCase):
 
 
 class TestAnalyze(TestCase):
-
     def test_analyze(self):
         offset = 0
 
@@ -437,15 +465,17 @@ class TestAnalyze(TestCase):
 
 
 class TestProcess(TestCase):
-
     def test_process(self):
         for paragraph in segmenter.process(DOCUMENT):
             offset = 0
 
             for sentence in paragraph:
                 for token in sentence:
-                    if token.value and token.value != "tincidunt":  # tin-cidunt linebreak!
+                    if (
+                        token.value and token.value != "tincidunt"
+                    ):  # tin-cidunt linebreak!
                         new_offset = DOCUMENT.find(token.value, offset)
-                        self.assertNotEqual(new_offset, -1,
-                                            repr(token) + " at %d" % offset)
+                        self.assertNotEqual(
+                            new_offset, -1, repr(token) + " at %d" % offset
+                        )
                         offset = new_offset + len(token.value)
