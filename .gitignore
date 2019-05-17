@@ -1,7 +1,9 @@
 /.idea/
 /.mypy_cache/
 /.pytest_cache/
+/.editorconfig
 /syntok.egg-info/
 /build/
 /dist/
+/venv/
 __pycache__/
