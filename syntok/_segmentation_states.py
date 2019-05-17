@@ -5,8 +5,11 @@ from syntok.tokenizer import Token
 
 
 class State(metaclass=ABCMeta):
-    closing_brackets = frozenset(")]}\uFF60\uFF5D\uFF3D\uFF09\uFE5E\uFE5C\uFE5A\uFD3F\u301B\u3019\u2986\u2984\u232A")
+    opening_brackets = frozenset("([{\uFF5F\uFF5B\uFF3B\uFF08\uFE5D\uFE5B\uFE59\uFD3E\u301A\u3018\u2985\u2983\u2329")
     """All possible closing brackets that can follow a terminal and still belong to the sentence."""
+
+    closing_brackets = frozenset(")]}\uFF60\uFF5D\uFF3D\uFF09\uFE5E\uFE5C\uFE5A\uFD3F\u301B\u3019\u2986\u2984\u232A")
+    """All possible opening brackets with content that might potentially be skipped."""
 
     closing_quotes = frozenset("'\"\u00B4\u2019\u201D\u232A\u27E9\u27EB\u2E29\u3009\u300B\u301E")
     """All possible closing quotes that can follow a terminal and still belong to the sentence."""
@@ -96,7 +99,7 @@ class State(metaclass=ABCMeta):
 
     @property
     def next_is_a_terminal(self) -> bool:
-        return not self.is_empty and (self.__queue[0].value in State.terminals)
+        return not self.is_empty and (self.__queue[0].value in State.terminals or self.__queue[0].value == "(")
 
     @property
     def next_is_a_potential_abbreviation_marker(self) -> bool:
@@ -110,6 +113,10 @@ class State(metaclass=ABCMeta):
     @property
     def next_is_a_closing_quote(self) -> bool:
         return not self.is_empty and self.__queue[0].value in State.closing_quotes
+
+    @property
+    def next_is_an_opening_parenthesis(self) -> bool:
+        return not self.is_empty and self.__queue[0].value in State.opening_brackets
 
     @property
     def next_has_no_spacing(self) -> bool:
@@ -156,16 +163,69 @@ class State(metaclass=ABCMeta):
         else:
             return True
 
-    def move_and_maybe_extract_terminal(self, is_first_word_in_sentence) -> 'State':
+    def find_next_token_after_parenthesis(self, parenthesis) -> Optional[Token]:
+        token = None
+        parens_stack = parenthesis
+        tokens = 1
+
+        while (len(self.__queue) > tokens or self.fetch_next()) and tokens < 50:
+            if self._queue[tokens].value in State.opening_brackets:
+                parens_stack += self.__queue[0].value
+            elif self.__queue[tokens].value in State.closing_brackets:
+                parens_stack = parens_stack[:-1]
+
+                if len(parens_stack) == 0:
+                    token = self.__queue[tokens]
+                    tokens += 1
+                    break
+
+            tokens += 1
+
+        return token
+
+    def move_and_skip_parenthesis(self) -> bool:
+        if self.move():
+            if self.next_is_an_opening_parenthesis:
+                parens_stack = self.__queue[0].value
+                start = self.__queue[0].offset
+                end = -1
+                tokens = 1
+
+                while len(self.__queue) > tokens or self.fetch_next():
+                    if self._queue[tokens].value in State.opening_brackets:
+                        parens_stack += self.__queue[0].value
+                    elif self.__queue[tokens].value in State.closing_brackets:
+                        parens_stack = parens_stack[:-1]
+
+                        if len(parens_stack) == 0:
+                            end = self.__queue[tokens].offset + 1
+                            tokens += 1
+                            break
+
+                    tokens += 1
+
+                if len(parens_stack) == 0 and end - start < 70:  # TODO: max token len of parenthesis content?
+                    self.__history.extend(self.__queue[:tokens])
+                    self.__queue = self.__queue[tokens:]
+
+        if not self.__queue:
+            return self.fetch_next()
+        else:
+            return True
+
+    def move_and_maybe_extract_terminal(self, is_first_word_in_sentence: bool) -> 'State':
         # token before the terminal ...
         token_before = self.last
         self.move()
+        is_opening_parenthesis = self.last == "("
+        offset_in_history = len(self.__history) - 1
         # ... and after the terminal:
         token_after = self.move_to_next_relevant_word_and_return_token_after_terminal()
 
         # Now decide whether to split:
         if self.next_is_lowercase or self.next_is_inner_sentence_punctuation:
             return self
+        # TODO: remove is_first_word_in_sentence and use isinstance(self, FirstToken)
         elif not (is_first_word_in_sentence and self.is_single_letter_or_roman_numeral(token_before)) and \
                 self.next_is_sentence_starter:
             return Terminal(self._stream, self._queue, self._history)
@@ -182,7 +242,14 @@ class State(metaclass=ABCMeta):
                 self.is_single_letter_or_roman_numeral(token_before):
             return self
         else:
-            return Terminal(self._stream, self._queue, self._history)
+            if is_opening_parenthesis:
+                old_q = self.__queue
+                self.__queue = self._history[offset_in_history:]
+                self.__queue.extend(old_q)
+                del self.__history[offset_in_history:]
+                return Terminal(self._stream, self._queue, self._history)
+            else:
+                return Terminal(self._stream, self._queue, self._history)
 
     def is_single_letter_or_roman_numeral(self, token):
         return len(token) == 1 or token in State.roman_numerals
@@ -192,24 +259,36 @@ class State(metaclass=ABCMeta):
         # self.last is supposed to be pointing at the terminal right now
         assert self.last in State.terminals
 
-        while self.next_is_a_post_terminal_symbol_part_of_sentence:
-            if not self.move():
-                break
+        if self.last == "(":
+            token = self.find_next_token_after_parenthesis("(")
+        else:
+            while self.next_is_a_post_terminal_symbol_part_of_sentence:
+                if not self.move():
+                    break
 
-            if token is None:
-                token = self.last
-
-        if self.next_is_a_closing_quote and self.next_has_no_spacing:
-            if self.move():
                 if token is None:
                     token = self.last
 
-        while self.next_is_a_post_terminal_symbol_part_of_sentence:
-            if not self.move():
-                break
+            if self.next_is_a_closing_quote and self.next_has_no_spacing:
+                if self.move():
+                    if token is None:
+                        token = self.last
 
-            if token is None:
-                token = self.last
+            while self.next_is_a_post_terminal_symbol_part_of_sentence:
+                if not self.move():
+                    break
+
+                if token is None:
+                    token = self.last
+
+            if self.next_is_an_opening_parenthesis:
+                idx = 1
+                token = None
+
+                while (len(self.__queue) > idx or self.fetch_next()) and \
+                        (token is None or token.value in State.opening_brackets):
+                    token = self.__queue[idx]
+                    idx += 1
 
         if token is None:
             token = "" if self.is_empty else self.__queue[0]
@@ -229,7 +308,7 @@ class FirstToken(State):
 
     def __next__(self) -> State:
         if not self.is_empty or self.fetch_next():
-            self.move()
+            self.move()  # Do not skip parenthesis if they open the sentence.
 
             if self.next_is_a_terminal:
                 return self.move_and_maybe_extract_terminal(True)
@@ -243,7 +322,7 @@ class InnerToken(State):
 
     def __next__(self) -> State:
         if not self.is_empty or self.fetch_next():
-            self.move()
+            self.move_and_skip_parenthesis()
 
             if self.next_is_a_terminal:
                 return self.move_and_maybe_extract_terminal(False)
