@@ -232,7 +232,7 @@ class TestSegmenter(TestCase):
         self.assertEqual([tokens[:sep], tokens[sep:]], result)
 
     def test_two_sentences_with_quotes_and_prenthesis_in_both(self):
-        tokens = Tokenizer().split('"{This is a sentence."} ["This is another sentence."]')
+        tokens = Tokenizer().split('{"This is a sentence."} ["This is another sentence."]')
         sep = 9
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens[:sep], tokens[sep:]], result)
@@ -340,6 +340,45 @@ class TestSegmenter(TestCase):
         tokens = Tokenizer().split("got an A. Mathematics was")
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens], result)
+
+    def test_abbreviation_followed_by_large_number(self):
+        tokens = Tokenizer().split("This is abcf. 123 here.")
+        result = segmenter.split(iter(tokens))
+        self.assertEqual([tokens], result)
+
+    def test_abbreviation_no_followed_by_alnum_token(self):
+        tokens = Tokenizer().split("This is no. A13 here.")
+        result = segmenter.split(iter(tokens))
+        self.assertEqual([tokens], result)
+
+    def test_abbreviation_followed_by_parenthesis(self):
+        tokens = Tokenizer().split("This is abcf. (123) in here.")
+        result = segmenter.split(iter(tokens))
+        self.assertEqual([tokens], result)
+
+    def test_do_not_split_short_text_inside_parenthesis(self):
+        tokens = Tokenizer().split("This is (Proc. ABC with Abs. Reg. Compliance) not here.")
+        result = segmenter.split(iter(tokens))
+        self.assertEqual([tokens], result)
+
+    def test_do_not_split_short_text_inside_parenthesis2(self):
+        tokens = Tokenizer().split("ET in the 112 ER+ patients (HR=2.79 for high CCNE1, p= .005 and .HR=1.97 for CCNE2, p= .05).")
+        result = segmenter.split(iter(tokens))
+        self.assertEqual([tokens], result)
+
+    def test_split_long_text_inside_parenthesis(self):
+        tokens = Tokenizer().split("This is one. (Here is another view of the same. And then there is a different case here.)")
+        sep1 = 4
+        sep2 = 13
+        result = segmenter.split(iter(tokens))
+        self.assertEqual([tokens[:sep1], tokens[sep1:sep2], tokens[sep2:]], result)
+
+    def test_split_long_text_inside_parenthesis2(self):
+        tokens = Tokenizer().split("This is one (Here is another view of the same. And then there is a different case here.)")
+        sep1 = 3
+        sep2 = 12
+        result = segmenter.split(iter(tokens))
+        self.assertEqual([tokens[:sep1], tokens[sep1:sep2], tokens[sep2:]], result)
 
 
 class TestPreprocess(TestCase):
