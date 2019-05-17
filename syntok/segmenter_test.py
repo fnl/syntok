@@ -366,6 +366,11 @@ class TestSegmenter(TestCase):
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens], result)
 
+    def test_do_not_split_short_text_inside_parenthesis3(self):
+        tokens = Tokenizer().split("ET in the 112 ER+ patients (HR=2.79 for high CCNE1, p= .005 and .HR=1.97 for CCNE2, p= .05) is wrong.")
+        result = segmenter.split(iter(tokens))
+        self.assertEqual([tokens], result)
+
     def test_split_long_text_inside_parenthesis(self):
         tokens = Tokenizer().split("This is one. (Here is another view of the same. And then there is a different case here.)")
         sep1 = 4
