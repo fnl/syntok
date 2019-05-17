@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from typing import List, Iterator, Optional
+from typing import List, Iterator, Optional, Tuple
 
 from syntok.tokenizer import Token
 
@@ -33,6 +33,15 @@ class State(metaclass=ABCMeta):
         )
     )
     """All possible terminal markers."""
+
+    max_bracket_skipping_length = 70
+    """
+    Max. num. characters of bracketed text in sentences to ignore when segmenting.
+    
+    This helps rapidly move over, e.g., citations as in:
+    "This was shown by (A. Author et al.) a few months ago."
+    Feel free to alter this value if you would prefer a different length.
+    """
 
     __vowels = "aeiouáéííóúäëïöüåæø"
     vowels = frozenset(__vowels + __vowels.upper())
@@ -99,23 +108,12 @@ class State(metaclass=ABCMeta):
         self.__queue = queue
         self.__history = history
 
-    @property
-    def _stream(self):
-        return self.__stream
-
-    @property
-    def _queue(self):
-        return self.__queue
-
-    @property
-    def _history(self):
-        return self.__history
-
-    @property
-    def at_sentence(self) -> bool:
-        return False
-
     def collect_history(self) -> Optional[List[Token]]:
+        """
+        Collect the current production so far.
+
+        If called from a Terminal state, the production will be the sentence.
+        """
         if self.__history:
             sentence = self.__history
             self.__history = []
@@ -124,6 +122,7 @@ class State(metaclass=ABCMeta):
             return None
 
     def __iter__(self) -> Iterator["State"]:
+        """Move to the next state."""
         state = self  # type: Optional['State']
 
         while state is not None:
@@ -132,7 +131,24 @@ class State(metaclass=ABCMeta):
 
     @abstractmethod
     def __next__(self) -> "State":
+        """State transitions to be implemented by the concrete classes."""
         raise StopIteration
+
+    @property
+    def _stream(self) -> Iterator[Token]:
+        return self.__stream
+
+    @property
+    def _queue(self) -> List[Token]:
+        return self.__queue
+
+    @property
+    def _history(self) -> List[Token]:
+        return self.__history
+
+    @property
+    def at_sentence(self) -> bool:
+        return False
 
     @property
     def next_is_a_terminal(self) -> bool:
@@ -210,7 +226,14 @@ class State(metaclass=ABCMeta):
     def is_empty(self) -> bool:
         return len(self.__queue) == 0
 
-    def fetch_next(self) -> bool:
+    @property
+    def last(self) -> str:
+        if len(self.__history):
+            return self.__history[-1].value
+        else:
+            return ""
+
+    def _fetch_next(self) -> bool:
         t = next(self.__stream, None)
 
         if t is not None:
@@ -219,95 +242,130 @@ class State(metaclass=ABCMeta):
         else:
             return False
 
-    def move(self) -> bool:
-        self.__history.append(self.__queue.pop(0))
+    def __find_next_token_after_bracket(self) -> str:
+        """
+        Find the next token after a bracketed text that does not look like a sentence,
+        when next is an opening bracket.
+        """
+        closing_bracket, has_inner_sentence = self.__find_end_of_bracketed_text()
 
-        if not self.__queue:
-            return self.fetch_next()
+        if (
+            closing_bracket > 0
+            and not has_inner_sentence
+            and (len(self.__queue) > closing_bracket + 1 or self._fetch_next())
+        ):
+            return self.__queue[closing_bracket + 1].value
         else:
-            return True
+            return ""
 
-    def find_next_token_after_bracket(self) -> Optional[Token]:
-        # used to find the next token after a sentence terminal and a opening bracket
-        token = None
+    def __skip_bracketed_text(self) -> bool:
+        """
+        Move over bracketed text if not too long and not looking like a sentence,
+        when next is an opening bracket.
+        """
+        assert self.next_is_an_opening_bracket
+        closing_bracket, has_inner_sentence = self.__find_end_of_bracketed_text()
+        start = self.__queue[0].offset
+
+        if closing_bracket > 0:
+            t = self.__queue[closing_bracket]
+            end = t.offset + len(t.value)
+
+            if (
+                end - start < State.max_bracket_skipping_length
+                or not has_inner_sentence
+            ):
+                self.__history.extend(self.__queue[: closing_bracket + 1])
+                self.__queue = self.__queue[closing_bracket + 1 :]
+                self._fetch_next()
+                return True
+
+        return False
+
+    def __find_end_of_bracketed_text(self) -> Tuple[int, bool]:
+        """
+        Find the index of the closing bracket in the queue (or zero if none)
+        and return a flag if the bracket seems to contain a sentence,
+        when next is an opening bracket.
+        """
         bracket_stack = [self.__queue[0].value]
-        tokens = 1
+        queue_idx = 1
+        first_is_title = None
+        last_is_terminal = False
 
-        while (len(self.__queue) > tokens or self.fetch_next()) and tokens < 50:
-            if self.__queue[tokens].value in State.opening_brackets:
+        while (len(self.__queue) > queue_idx or self._fetch_next()) and queue_idx < 50:
+            # check if there is something like an inner sentence inside
+            if first_is_title is None and self.__queue[queue_idx].value.isalnum():
+                first_is_title = self.__queue[queue_idx].value.istitle()
+            elif first_is_title and self.__queue[queue_idx].value.isalnum():
+                if len(self.__queue) > queue_idx + 1 or self._fetch_next():
+                    last_is_terminal = (
+                        self.__queue[queue_idx + 1].value in State.terminals
+                    )
+                else:
+                    last_is_terminal = False
+
+            # stack brackets until the stack is empty
+            if self.__queue[queue_idx].value in State.opening_brackets:
                 bracket_stack.append(self.__queue[0].value)
-            elif self.__queue[tokens].value in State.closing_brackets:
+            elif self.__queue[queue_idx].value in State.closing_brackets:
                 bracket_stack.pop()
 
                 if len(bracket_stack) == 0:
-                    tokens += 1
-
-                    if len(self.__queue) > tokens or self.fetch_next():
-                        token = self.__queue[tokens]
-
                     break
 
-            tokens += 1
+            queue_idx += 1
 
-        return token
+        return (
+            queue_idx if len(bracket_stack) == 0 else 0,
+            bool(first_is_title and last_is_terminal),
+        )
 
-    def move_and_skip_bracketed_text(self) -> bool:
-        if self.move():
-            if self.next_is_an_opening_bracket:
-                self.skip_bracketed_text()
+    def _move(self) -> bool:
+        """Advance the queue, storing the old value in history."""
+        self.__history.append(self.__queue.pop(0))
 
         if not self.__queue:
-            return self.fetch_next()
+            return self._fetch_next()
         else:
             return True
 
-    def skip_bracketed_text(self) -> bool:
-        assert self.next_is_an_opening_bracket
-        parens_stack = self.__queue[0].value
-        start = self.__queue[0].offset
-        end = -1
-        tokens = 1
+    def _move_and_skip_bracketed_text(self) -> bool:
+        """Advance the queue, and also skip over bracketed text if applicable."""
+        if self._move():
+            if self.next_is_an_opening_bracket:
+                self.__skip_bracketed_text()
 
-        while len(self.__queue) > tokens or self.fetch_next():
-            if self.__queue[tokens].value in State.opening_brackets:
-                parens_stack += self.__queue[0].value
-            elif self.__queue[tokens].value in State.closing_brackets:
-                parens_stack = parens_stack[:-1]
-
-                if len(parens_stack) == 0:
-                    t = self.__queue[tokens]
-                    end = t.offset + len(t.value)
-                    tokens += 1
-                    break
-
-            tokens += 1
-
-        if (
-            len(parens_stack) == 0 and end - start < 70
-        ):  # TODO: max str len of parenthesis content?
-            self.__history.extend(self.__queue[:tokens])
-            self.__queue = self.__queue[tokens:]
-            return True
+        if not self.__queue:
+            return self._fetch_next()
         else:
-            return False
+            return True
 
-    def move_and_maybe_extract_terminal(
-        self, is_first_word_in_sentence: bool
-    ) -> "State":
+    def _move_and_maybe_extract_terminal(self) -> "State":
+        """
+        If next is a terminal or an opening bracket, advance the queue and
+        check whether to transition to the Terminal state.
+        """
         # token before the terminal ...
         token_before = self.last
-        self.move()
+
+        if not self.next_is_an_opening_bracket:
+            self._move()
+
         # ... and after the terminal:
-        token_after = self.move_to_next_relevant_word_and_return_token_after_terminal()
+        token_after = (
+            self.__move_to_next_relevant_word_and_return_token_after_terminal()
+        )
+        # self.last now is the last token of the potential sentence
+        # while next is the potential first token of the next sentence
 
         # Now decide whether to split:
         if self.next_is_lowercase or self.next_is_inner_sentence_punctuation:
             return self  # return self ==> don't split
 
-        # TODO: remove is_first_word_in_sentence and use isinstance(self, FirstToken)
         elif (
             not (
-                is_first_word_in_sentence
+                isinstance(self, FirstToken)
                 and self.is_single_letter_or_roman_numeral(token_before)
             )
             and self.next_is_sentence_starter
@@ -335,69 +393,73 @@ class State(metaclass=ABCMeta):
             return self
 
         elif (
-            is_first_word_in_sentence or token_before.isupper()
+            isinstance(self, FirstToken) or token_before.isupper()
         ) and self.is_single_letter_or_roman_numeral(token_before):
             return self
+
+        elif token_after in State.opening_brackets:
+            token = self.__find_next_token_after_bracket()
+
+            if token[:1].islower() or token in State.inner_sentence_punctuation:
+                return self
+            else:
+                return Terminal(self._stream, self._queue, self._history)
 
         else:  # do segment the sentences at this position
             return Terminal(self._stream, self._queue, self._history)
 
-    @staticmethod
-    def is_single_letter_or_roman_numeral(token):
-        return len(token) == 1 or token in State.roman_numerals
-
-    def move_to_next_relevant_word_and_return_token_after_terminal(self) -> str:
-        assert self.last in State.terminals or self.last in State.opening_brackets
+    def __move_to_next_relevant_word_and_return_token_after_terminal(self) -> str:
+        """
+        If after a terminal and/or next is an opening bracket,
+        move to the next token to consider in the queue and
+        return the most relevant token value after the terminal.
+        """
+        assert self.last in State.terminals or self.next_is_an_opening_bracket
         token = None
 
-        if self.next_is_an_opening_bracket:
-            token = self.__queue[0]
-            self.skip_bracketed_text()
+        if self.next_is_an_opening_bracket and self.last not in State.terminals:
+            self.__skip_bracketed_text()
         else:
             while self.next_is_a_post_terminal_symbol_part_of_sentence:
-                if not self.move():
+                if not self._move():
                     break
 
                 if token is None:
                     token = self.last
 
             if self.next_is_a_closing_quote and self.next_has_no_spacing:
-                if self.move():
+                if self._move():
                     if token is None:
                         token = self.last
 
             while self.next_is_a_post_terminal_symbol_part_of_sentence:
-                if not self.move():
+                if not self._move():
                     break
 
                 if token is None:
                     token = self.last
 
             if self.next_is_an_opening_bracket:
-                token = self.__queue[0]  # always return this token
-                self.skip_bracketed_text()
+                token = self.__queue[0].value  # always return this token
+                # do not move yet - we might want the bracket for the next sentence.
 
-        if token is None:
-            token = "" if self.is_empty else self.__queue[0]
+        if token is None and (not self.is_empty or self._fetch_next()):
+            token = self.__queue[0].value
 
-        # self.last now is supposed to be at the last token of the current sentence
-        return token
+        return "" if token is None else token
 
-    @property
-    def last(self) -> str:
-        if len(self.__history):
-            return self.__history[-1].value
-        else:
-            return ""
+    @staticmethod
+    def is_single_letter_or_roman_numeral(token):
+        return len(token) == 1 or token in State.roman_numerals
 
 
 class FirstToken(State):
     def __next__(self) -> State:
-        if not self.is_empty or self.fetch_next():
-            self.move()  # Do not skip parenthesis if they open the sentence.
+        if not self.is_empty or self._fetch_next():
+            self._move()  # Do not skip parenthesis if they open the sentence.
 
             if self.next_is_a_terminal:
-                return self.move_and_maybe_extract_terminal(True)
+                return self._move_and_maybe_extract_terminal()
             else:
                 return InnerToken(self._stream, self._queue, self._history)
         else:
@@ -406,11 +468,11 @@ class FirstToken(State):
 
 class InnerToken(State):
     def __next__(self) -> State:
-        if not self.is_empty or self.fetch_next():
-            self.move_and_skip_bracketed_text()
+        if not self.is_empty or self._fetch_next():
+            self._move_and_skip_bracketed_text()
 
             if self.next_is_a_terminal or self.next_is_an_opening_bracket:
-                return self.move_and_maybe_extract_terminal(False)
+                return self._move_and_maybe_extract_terminal()
             else:
                 return self
         else:
@@ -423,7 +485,7 @@ class Terminal(State):
         return len(self._history) > 0
 
     def __next__(self) -> State:
-        if not self.is_empty or self.fetch_next():
+        if not self.is_empty or self._fetch_next():
             return FirstToken(self._stream, self._queue, self._history)
         else:
             return End(self._stream, self._queue, self._history)

@@ -2,13 +2,13 @@ from typing import Iterator, List, Tuple
 
 import regex
 
+from syntok._segmentation_states import Begin, State
 from syntok.tokenizer import Token, Tokenizer
-from syntok._segmentation_states import Begin
 
 __PARAGRAPH_SEP = regex.compile("\r?\n(?:\\s*\r?\n)+")
 
 
-def analyze(document: str) -> Iterator[Iterator[List[Token]]]:
+def analyze(document: str, bracket_skip_len=None) -> Iterator[Iterator[List[Token]]]:
     """
     Segment a document into paragraphs, sentences, and tokens,
     all the while preserving the offsets of the tokens in the text.
@@ -18,16 +18,17 @@ def analyze(document: str) -> Iterator[Iterator[List[Token]]]:
     `str` value is producible from the `Token` spacing and values.
 
     :param document: to process
+    :param bracket_skip_len: n. chars of bracketed text inside sentences to skip over
     :return: an iterator over paragraphs and sentences as lists of tokens
     """
     tok = Tokenizer(replace_not_contraction=False)
 
     for offset, paragraph in preprocess_with_offsets(document):
         tokens = tok.tokenize(paragraph, offset)
-        yield segment(tokens)
+        yield segment(tokens, bracket_skip_len)
 
 
-def process(document: str) -> Iterator[Iterator[List[Token]]]:
+def process(document: str, bracket_skip_len=None) -> Iterator[Iterator[List[Token]]]:
     """
     Segment a document into paragraphs, sentences, and tokens.
 
@@ -36,12 +37,13 @@ def process(document: str) -> Iterator[Iterator[List[Token]]]:
     therefore the original input document might not be reproducible.
 
     :param document: to process
+    :param bracket_skip_len: n. chars of bracketed text inside sentences to skip over
     :return: an iterator over paragraphs and sentences as lists of tokens
     """
     tok = Tokenizer()
 
     for paragraph in preprocess(document):
-        yield segment(tok.tokenize(paragraph))
+        yield segment(tok.tokenize(paragraph), bracket_skip_len)
 
 
 def preprocess(text: str) -> List[str]:
@@ -79,25 +81,30 @@ def preprocess_with_offsets(text: str) -> List[Tuple[int, str]]:
     return list(finditer())
 
 
-def split(tokens: Iterator[Token]) -> List[List[Token]]:
+def split(tokens: Iterator[Token], bracket_skip_len=None) -> List[List[Token]]:
     """
     Split Token streams into lists of sentences.
 
     :param tokens: the Token stream to segment
+    :param bracket_skip_len: n. chars of bracketed text inside sentences to skip over
     :return: a list of Token lists,
              with each Token list representing a sentence
     """
-    return list(segment(tokens))
+    return list(segment(tokens, bracket_skip_len))
 
 
-def segment(tokens: Iterator[Token]) -> Iterator[List[Token]]:
+def segment(tokens: Iterator[Token], bracket_skip_len=None) -> Iterator[List[Token]]:
     """
     Stream Token streams into sentence streams.
 
     :param tokens: the Token stream to segment
+    :param bracket_skip_len: n. chars of bracketed text inside sentences to skip over
     :return: an iterator over lists of Tokens,
              with each list representing a sentence
     """
+    if bracket_skip_len is not None:
+        State.max_bracket_skipping_length = int(bracket_skip_len)
+
     for state in Begin(tokens):
         if state.at_sentence:
             history = state.collect_history()
@@ -109,12 +116,14 @@ def segment(tokens: Iterator[Token]) -> Iterator[List[Token]]:
 if __name__ == '__main__':
     import sys
 
+
     def do(document: str) -> None:
         for paragraph in process(document):
             for sentence in paragraph:
                 print("".join(map(str, sentence)).lstrip())
 
             print("")
+
 
     for filename in sys.argv[1:]:
         with open(filename, 'rt') as handle:

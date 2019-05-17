@@ -71,7 +71,8 @@ And then there is the U.K. House of Commons.
 Now only this splits: the EU.
 A sentence ending in U.S. Another that will not split.
 12 monkeys ran into here.
-Nested (Parenthesis.
+Nested
+(Parenthesis.
 (With words inside!
 (Right.))
 (More stuff.
@@ -362,12 +363,17 @@ class TestSegmenter(TestCase):
         self.assertEqual([tokens], result)
 
     def test_do_not_split_short_text_inside_parenthesis2(self):
-        tokens = Tokenizer().split("ET in the 112 ER+ patients (HR=2.79 for high CCNE1, p= .005 and .HR=1.97 for CCNE2, p= .05).")
+        tokens = Tokenizer().split("This is (Proc. ABC with Abs. Reg. Compliance) not here.")
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens], result)
 
     def test_do_not_split_short_text_inside_parenthesis3(self):
         tokens = Tokenizer().split("ET in the 112 ER+ patients (HR=2.79 for high CCNE1, p= .005 and .HR=1.97 for CCNE2, p= .05) is wrong.")
+        result = segmenter.split(iter(tokens))
+        self.assertEqual([tokens], result)
+
+    def test_do_not_split_short_text_inside_parenthesis4(self):
+        tokens = Tokenizer().split("This was shown by (A. Author et al.) a few months ago.")
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens], result)
 
@@ -385,6 +391,23 @@ class TestSegmenter(TestCase):
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens[:sep1], tokens[sep1:sep2], tokens[sep2:]], result)
 
+    def test_split_with_complex_parenthesis_structure(self):
+        tokens = Tokenizer().split("What the heck? (A) First things here.")
+        sep = 4
+        result = segmenter.split(iter(tokens))
+        self.assertEqual([tokens[:sep], tokens[sep:]], result)
+
+    def test_split_with_a_simple_parenthesis_structure(self):
+        tokens = Tokenizer().split('And another sentence on the same line. (How about a sentence in parenthesis?) Or a sentence with "a quote!"')
+        sep1 = 8
+        sep2 = 17
+        result = segmenter.split(iter(tokens))
+        self.assertEqual([tokens[:sep1], tokens[sep1:sep2], tokens[sep2:]], result)
+
+    def test_split_with_simple_inner_bracketed_text(self):
+        tokens = Tokenizer().split("Specimens (n = 32) were sent for 16S rRNA PCR.")
+        result = segmenter.split(iter(tokens))
+        self.assertEqual([tokens], result)
 
 class TestPreprocess(TestCase):
 
