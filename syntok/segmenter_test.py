@@ -431,8 +431,23 @@ class TestSegmenter(TestCase):
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens[:sep1], tokens[sep1:sep2], tokens[sep2:]], result)
 
-    def test_split_with_simple_inner_bracketed_text(self):
+    def test_no_split_with_simple_inner_bracketed_text(self):
         tokens = Tokenizer().split("Specimens (n = 32) were sent for 16S rRNA PCR.")
+        result = segmenter.split(iter(tokens))
+        self.assertEqual([tokens], result)
+
+    def test_no_split_on_strange_text(self):
+        tokens = Tokenizer().split("Four patients (67%) with an average response of 3.3 mos. (range 6 wks. to 12 mos.)")
+        result = segmenter.split(iter(tokens))
+        self.assertEqual([tokens], result)
+
+    def test_no_split_on_strange_text2(self):
+        tokens = Tokenizer().split("Packed cells (PRBC) for less than 20,000 thousand/micro.L, repsectively.")
+        result = segmenter.split(iter(tokens))
+        self.assertEqual([tokens], result)
+
+    def test_no_split_on_strange_text3(self):
+        tokens = Tokenizer().split("This is Company Wag.B.H., truly.")
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens], result)
 

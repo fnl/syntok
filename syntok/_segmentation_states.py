@@ -71,7 +71,7 @@ class State(metaclass=ABCMeta):
     bmo Bmo brig Bd Brig bsp Bsp bspw bzgl bzw ca cap capt Capt cf cmdt Cmdt cnel Cnel Co col Col Corp
     de Dr dgl dt emp en es etc evtl excl exca Exca excmo Excmo exsmo Exsmo ff fig Fig figs Figs fr Fr
     gal gen Gen ggf gral Gral GmbH gob Gob Hd hno Hno hnos Hnos Inc incl inkl lic Lic lit ldo Ldo Ltd
-    mag Mag max med Med min Mio Mr mr Mrd Mrs mrs Ms ms Mt mt MwSt nat Nat Nr nr ntra Ntra ntro Ntro
+    mag Mag max med Med min Mio mos Mr mr Mrd Mrs mrs Ms ms Mt mt MwSt nat Nat Nr nr ntra Ntra ntro Ntro
     pag phil prof Prof rer Rer resp sci Sci Sr sr Sra sra Srta srta St st synth tab Tab tel Tel
     univ Univ Urt vda Vda vol Vol vs vta zB zit zzgl
     Mon lun Tue mar Wed mie mié Thu jue Fri vie Sat sab Sun dom
@@ -381,6 +381,13 @@ class State(metaclass=ABCMeta):
             return self
 
         elif self.next_is_numeric and self.next_has_no_spacing:
+            return self
+
+        elif self.next_has_no_spacing and (
+                not token_after.istitle()
+                or not token_after.isalpha()
+                or len(token_after) == 1
+        ):
             return self
 
         elif self.next_is_a_large_number:
