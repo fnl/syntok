@@ -194,7 +194,7 @@ class Tokenizer:
                 yield Token(text[offset:mo.start()], c, mo.start())
                 offset = start
             else:
-                yield Token("", c, mo.start())
+                yield Token("", c, mo.start() + i)
 
         return offset
 

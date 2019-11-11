@@ -139,6 +139,7 @@ Copyright (c) 2017-2019, Florian Leitner. All rights reserved.
 History
 =======
 
+- **1.2.1** bugfix for offsets in multi-nonword prefix tokens; Issue `#6`_
 - **1.2.1** added a generic rule for catching more uncommon uses of "." without space suffix as abbreviation marker
 - **1.2.0** added support for skipping and handling text in brackets (e.g., citations)
 - **1.1.1** fixed non-trivial segmentation in sci. text and refactored splitting logic to one place only
@@ -149,3 +150,4 @@ History
 
 .. _segtok: https://github.com/fnl/segtok
 .. _configuring the environment variable: https://docs.python.org/3/using/cmdline.html
+.. _#6: https://github.com/fnl/syntok/issues/6

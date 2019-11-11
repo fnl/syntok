@@ -79,6 +79,18 @@ class TestTokenizer(TestCase):
         result = self.tokenizer.split(text)
         self.assertListEqual(s(result), ["Lalala", "...", "or", "Lala", "Land", "...", "."])
 
+    def test_nonword_prefix(self):
+        text = "..A"
+        result = self.tokenizer.split(text)
+        self.assertListEqual(s(result), [".", ".", "A"])
+        self.assertListEqual([t.offset for t in result], [0, 1, 2])
+
+    def test_nonword_high_prefix(self):
+        text = "\U0001F64C.A"
+        result = self.tokenizer.split(text)
+        self.assertListEqual(s(result), ["\U0001F64C", ".", "A"])
+        self.assertListEqual([t.offset for t in result], [0, 1, 2])  # requires Py3.3+
+
 
 class TestToText(TestCase):
 
