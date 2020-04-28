@@ -135,6 +135,9 @@ A sampling frequency of 780 MHz.
 The figure-of-merit of the modulator is there.
 Patients with prodromal DLB.
 In line with the literature on DLB.
+This is verse 14;45 in the test;
+Splitting on semi-colons.
+The discovery of low-mass nulceli (AGN; NGC 4395 and POX 52; Filippenko & Sargent 1989; Kunth et al. 1987) triggered a quest; it has yielded today more than 500 sources.
 Always last, clear closing example."""
 
 SENTENCES = OSPL.split("\n")

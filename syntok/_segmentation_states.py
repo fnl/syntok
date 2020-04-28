@@ -29,7 +29,7 @@ class State(metaclass=ABCMeta):
     terminals = frozenset(
         {"..."}
         | set(
-            ".!?\u203C\u203D\u2047\u2048\u2049\u3002\uFE52\uFE57\uFF01\uFF0E\uFF1F\uFF61"
+            ".!?;\u203C\u203D\u2047\u2048\u2049\u3002\uFE52\uFE57\uFF01\uFF0E\uFF1F\uFF61"
         )
     )
     """All possible terminal markers."""
