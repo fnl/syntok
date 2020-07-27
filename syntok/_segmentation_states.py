@@ -67,13 +67,17 @@ class State(metaclass=ABCMeta):
 
     abbreviations = frozenset(
         """
-    Abb adm Adm Abs afmo alt Alt Anl ap apdo approx Approx art Art atte atto Aufl ave Ave Az
-    bmo Bmo brig Bd Brig bsp Bsp bspw bzgl bzw ca cap capt Capt cf cmdt Cmdt cnel Cnel Co col Col Corp
-    de Dr dgl dt emp en es etc evtl excl exca Exca excmo Excmo exsmo Exsmo ff fig Fig figs Figs fr Fr
-    gal gen Gen ggf gral Gral GmbH gob Gob Hd hno Hno hnos Hnos Inc incl inkl lic Lic lit ldo Ldo Ltd
-    mag Mag max med Med min Mio mos Mr mr Mrd Mrs mrs Ms ms Mt mt MwSt nat Nat Nr nr ntra Ntra ntro Ntro
-    pag phil prof Prof rer Rer resp sci Sci Sr sr Sra sra Srta srta St st synth tab Tab tel Tel
-    univ Univ Urt vda Vda vol Vol vs vta zB zit zzgl
+    Abb Abs Adm adm afmo Alt alt Anl ap apdo approx Approx Art art atte atto Aufl
+    ave Ave Az Bd Bmo bmo brig Brig bsp Bsp bspw bzgl bzw ca cap capt Capt cf Cmdt
+    cmdt cnel Cnel Co col Col Corp Dan de Deut dgl Dr dt Ecc Eccl emp en Eph es
+    Est Esth etc evtl Ex exca Exca excl excmo Excmo Exo Exod exsmo Exsmo Ezek Ezra
+    ff Fig fig figs Figs Fr fr Gal gal gen Gen ggf GmbH Gob gob Gral gral Hab Hag
+    Hd Heb hno Hno hnos Hnos Hos Inc incl inkl Isa Jas Jer Jon Josh Judg Lam Ldo 
+    ldo Lev Lic lic lit Ltd mag Mag Mal Matt max med Med Mic min Mio mos mr Mr Mrd
+    mrs Mrs Ms ms mt Mt MwSt Nah Nat nat Neh nr Nr Ntra ntra Ntro ntro Num Oba Obad
+    pag Phil phil Phlm Pro Prof prof Prov Ps Psalm Rer rer resp Rev Rom Sci sci Song
+    Sr sr sra Sra srta Srta St st synth tab Tab Tel tel Univ univ Urt Vda vda Vol
+    vol vs vta zB Zech Zeph zit zzgl
     Mon lun Tue mar Wed mie mié Thu jue Fri vie Sat sab Sun dom
     """.split()
         + list(months)

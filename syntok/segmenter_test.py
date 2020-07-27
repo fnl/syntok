@@ -378,6 +378,14 @@ class TestSegmenter(TestCase):
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens], result)
 
+    def test_do_not_split_bible_citation(self):
+        tokens = Tokenizer().split(
+            "This is not a real quote? (Phil. 4:8) No, it's not."
+        )
+        result = segmenter.split(iter(tokens))
+        self.assertEqual(len(result[0]), 7)
+        self.assertEqual(len(result[1]), 11)
+
     def test_do_not_split_short_text_inside_parenthesis2(self):
         tokens = Tokenizer().split(
             "This is (Proc. ABC with Abs. Reg. Compliance) not here."
