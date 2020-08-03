@@ -67,21 +67,18 @@ class State(metaclass=ABCMeta):
 
     abbreviations = frozenset(
         """
-    Abb Abs Adm adm afmo Alt alt Anl ap apdo approx Approx Art art atte atto Aufl
-    ave Ave Az Bd Bmo bmo brig Brig bsp Bsp bspw bzgl bzw ca cap capt Capt cf Cmdt
-    cmdt cnel Cnel Co col Col Corp Dan de Deut dgl Dr dt Ecc Eccl emp en Eph es
-    Est Esth etc evtl Ex exca Exca excl excmo Excmo Exo Exod exsmo Exsmo Ezek Ezra
-    ff Fig fig figs Figs Fr fr Gal gal gen Gen ggf GmbH Gob gob Gral gral Hab Hag
-    Hd Heb hno Hno hnos Hnos Hos Inc incl inkl Isa Jas Jer Jon Josh Judg Lam Ldo 
-    ldo Lev Lic lic lit Ltd mag Mag Mal Matt max med Med Mic min Mio mos mr Mr Mrd
-    mrs Mrs Ms ms mt Mt MwSt Nah Nat nat Neh nr Nr Ntra ntra Ntro ntro Num Oba Obad
-    pag Phil phil Phlm Pro Prof prof Prov Ps Psalm Rer rer resp Rev Rom Sci sci Song
-    Sr sr sra Sra srta Srta St st synth tab Tab Tel tel Univ univ Urt Vda vda Vol
-    vol vs vta zB Zech Zeph zit zzgl
+    Abb adm Adm Abs afmo alt Alt Anl ap apdo approx Approx art Art atte atto Aufl ave Ave Az
+    bmo Bmo brig Bd Brig bsp Bsp bspw bzgl bzw ca cap capt Capt cf cmdt Cmdt cnel Cnel Col Co col Col Dan Corp
+    Deut de Dr Ecc dgl Eccl dt Eph emp Est en Esth es etc Ex evtl excl exca Exca Exo excmo Exod Excmo Ezek exsmo Ezra Exsmo ff fig Fig figs Figs fr Gal Fr
+    Gen gal gen Gen ggf gral Gral GmbH gob Hab Hag Gob Heb Hd hno Hno hnos Hos Hnos Jas Isa Jer Jon Inc Josh Judg Lam incl Lev inkl lic Lic lit ldo Ldo Ltd
+    mag Mal Matt Mag max med Mic Med min Mio mos Mr mr Mrd Mrs mrs Ms ms Mt mt Nah MwSt nat Neh Nat Nr nr ntra Ntra ntro Oba Num Obad Ntro
+    Phlm pag Pro Phil phil Prov prof Ps Psalm Prof rer Rev Rer Rom resp sci Sci Sr sr Sra sra Srta srta St st synth tab Tab tel Tel
+    univ Univ Urt vda Vda vol Vol vs Zech vta Zeph zB zit zzgl
     Mon lun Tue mar Wed mie mié Thu jue Fri vie Sat sab Sun dom
     """.split()
         + list(months)
     )
+
     """Abbreviations with no dots inside."""
 
     starters = frozenset(
