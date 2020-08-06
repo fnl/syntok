@@ -36,9 +36,9 @@ The easiest way to get ``syntok`` installed is using ``pip`` or any other packag
 
     pip3 install syntok
 
-*Important*: If you are on a Linux machine and have problems installing the ``regex`` dependency of ``segtok``, make sure you have the ``python-dev`` and/or ``python3-dev`` packages installed to get the necessary headers to compile that package.
+*Important*: If you are on a Linux machine and have problems installing the ``regex`` dependency of ``syntok``, make sure you have the ``python-dev`` and/or ``python3-dev`` packages installed to get the necessary headers to compile that package.
 
-Then try the command line tools on some plain-text files (e.g., this README) to see if ``segtok`` meets your needs::
+Then try the command line tools on some plain-text files (e.g., this README) to see if ``syntok`` meets your needs::
 
     python3 -m syntok.segmenter README.rst
     python3 -m syntok.tokenizer README.rst
