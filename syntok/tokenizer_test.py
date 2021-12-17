@@ -105,7 +105,7 @@ class TestTokenizer(TestCase):
         text = "don't"
         self.tokenizer = Tokenizer(replace_not_contraction=True)
         result = self.tokenizer.split(text)
-        self.assertListEqual([t.offset for t in result], [0, 3])
+        self.assertListEqual([t.offset for t in result], [0, 2])
         self.assertListEqual([t.value for t in result], ["do", "not"])
 
 

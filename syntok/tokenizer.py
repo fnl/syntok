@@ -221,8 +221,7 @@ class Tokenizer:
                     yield Token(prefix, word[remainder:mo.start() - 1], offset + remainder)
                     prefix = ""
 
-                yield Token(prefix, "not" if self.replace_not_contraction else 'n' +
-                            mo.group(0), offset + mo.start() - (0 if self.replace_not_contraction else 1))
+                yield Token(prefix, "not" if self.replace_not_contraction else 'n' + mo.group(0), offset + mo.start() - 1)
                 return ""
 
             yield Token(prefix, word[remainder:mo.start()], offset + remainder)
