@@ -91,6 +91,23 @@ class TestTokenizer(TestCase):
         self.assertListEqual(s(result), ["\U0001F64C", ".", "A"])
         self.assertListEqual([t.offset for t in result], [0, 1, 2])  # requires Py3.3+
 
+    def test_apostrophe_offset_without_replace_not_contraction(self):
+        # NOTE: in this case nothing is replaced, so the offsets should remain identical
+        # to those in the original text
+        text = "don't"
+        self.tokenizer = Tokenizer(replace_not_contraction=False)
+        result = self.tokenizer.split(text)
+        self.assertListEqual([t.offset for t in result], [0, 2])
+
+    def test_apostrophe_offset_with_replace_not_contraction(self):
+        # NOTE: in this case, "n't" is replaced with "not", so a space is introduced.
+        # e.g. "don't" -> "do not", "can't" -> "can not"
+        text = "don't"
+        self.tokenizer = Tokenizer(replace_not_contraction=True)
+        result = self.tokenizer.split(text)
+        self.assertListEqual([t.offset for t in result], [0, 2])
+        self.assertListEqual([t.value for t in result], ["do", "not"])
+
 
 class TestToText(TestCase):
 
