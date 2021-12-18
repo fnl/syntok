@@ -2,6 +2,7 @@
 /.mypy_cache/
 /.pytest_cache/
 /.editorconfig
+/.python-version
 /syntok.egg-info/
 /build/
 /dist/
