@@ -133,12 +133,20 @@ Legal
 
 License: `MIT <http://opensource.org/licenses/MIT>`_
 
-Copyright (c) 2017-2019, Florian Leitner. All rights reserved.
+Copyright (c) 2017-2021, Florian Leitner. All rights reserved.
 
+Contributors
+============
+
+- Koen Dercksen, @KDercksen, https://koendercksen.com/  
+- Sergiusz Bleja, @svenski 
+
+Thank you!
 
 History
 =======
 
+- **1.3.2** bugfix for offset of not contractions; discussion in Issue `#15`_
 - **1.3.1** segmenting now occurs at semi-colons, too; discussion in Issue `#9`_
 - **1.2.2** bugfix for offsets in multi-nonword prefix tokens; Issue `#6`_
 - **1.2.1** added a generic rule for catching more uncommon uses of "." without space suffix as abbreviation marker
@@ -153,3 +161,4 @@ History
 .. _configuring the environment variable: https://docs.python.org/3/using/cmdline.html
 .. _#6: https://github.com/fnl/syntok/issues/6
 .. _#9: https://github.com/fnl/syntok/issues/9
+.. _#15: https://github.com/fnl/syntok/issues/15
