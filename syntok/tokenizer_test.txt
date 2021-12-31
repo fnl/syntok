@@ -38,6 +38,8 @@ Weird -usage- of hyphens.
 Weird - usage - of hyphens .
 Split hidden,sentence terminal.Here the user missed,a space.
 Split hidden , sentence terminal . Here the user missed , a space .
+Split zero width​space characters.
+Split zero width space characters .
 Special a,b a:a b;b a.b A.B and Aa.B and A!B Aa!B and A?A Aa?B
 Special a , b a:a b ; b a.b A.B and Aa . B and A!B Aa ! B and A?A Aa ? B
 Srᵃ “A&D” yes-no CaMel U.S.A. *@#$^%! $10.00 Nº (one_two): a@b.c is 1ᵃ.
