@@ -71,8 +71,8 @@ class Tokenizer:
     _hyphens = "\u00AD\u058A\u05BE\u0F0C\u1400\u1806\u2010\u2011\u2012\u2e17\u30A0-"
     """Hyphen Unicode chars to be aware of when splitting."""
 
-    _hyphens_and_underscore = frozenset(_hyphens + "_" + "\u200b\u200c")
-    """The set of all hyphen Unicode chars, the underscore and the zero-width space and non-joiner."""
+    _hyphens_and_underscore = frozenset(_hyphens + "_")
+    """The set of all hyphen Unicode chars and the underscore."""
 
     _hyphen_newline = regex.compile(r"(?<=\p{L})[" + _hyphens + "][ \t\u00a0\r]*\n[ \t\u00a0]*(?=\\p{L})")
     """A token split across a newline with a hyphen marker."""
@@ -89,14 +89,14 @@ class Tokenizer:
         r"[" + _apostrophes + r"]\p{L}+|" +  # apostrophes and their tail
         r"[\p{Ps}\p{Pe}]|" +   # parenthesis and open/close punctuation
         r"\.\.\.|" +  # inner ellipsis
-        r"[\u200b\u200c]|" +  # zero width space and zero width non-joiner
         r"(?<=\p{L})[,;_" + _hyphens + r"](?=[\p{L}\p{Nd}])|" +  # dash-not-digits transition prefix
         r"(?<=[\p{L}\p{Nd}])[,;_" + _hyphens + r"](?=\p{L})"  # dash-not-digits transition postfix
     )
     """Secondary regex to sub-split non-whitespace sequences."""
 
-    _spaces = regex.compile(r"\S+", regex.UNICODE)
-    """Primary regex to split strings at any kind of Unicode whitespace."""
+    # Annoyingly, unicode regex character class \S does not include the zwsp...
+    _spaces = regex.compile(r"[^\s\u200b]+", regex.UNICODE)
+    """Primary regex to split strings at any kind of Unicode whitespace and the zero width space (zwsp)."""
 
     @staticmethod
     def join_hyphenated_words_across_linebreaks(text: str) -> str:
