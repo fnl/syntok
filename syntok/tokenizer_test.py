@@ -69,7 +69,7 @@ class TestTokenizer(TestCase):
         self.assertListEqual(s(self.tokenizer.split("ab_cd")), ["ab", "_", "cd"])
 
     def test_spacing_prefix(self):
-        text = " Hi man,  spaces !! "
+        text = " Hi man,  spaces of \u200Ball  kinds!! "
         output = self.tokenizer.split(text)
         reconstruction = "".join(map(str, output))
         self.assertEqual(text, reconstruction)

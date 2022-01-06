@@ -94,8 +94,9 @@ class Tokenizer:
     )
     """Secondary regex to sub-split non-whitespace sequences."""
 
-    _spaces = regex.compile(r"\S+", regex.UNICODE)
-    """Primary regex to split strings at any kind of Unicode whitespace."""
+    # Annoyingly, unicode regex character class \S does not include the zwsp...
+    _spaces = regex.compile(r"[^\s\u200b]+", regex.UNICODE)
+    """Primary regex to split strings at any kind of Unicode whitespace and the zero width space (zwsp)."""
 
     @staticmethod
     def join_hyphenated_words_across_linebreaks(text: str) -> str:
