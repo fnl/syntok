@@ -1,10 +1,12 @@
+/*.code-workspace
+/.editorconfig
 /.idea/
 /.mypy_cache/
 /.pytest_cache/
-/.editorconfig
 /.python-version
-/syntok.egg-info/
+/.vscode/
 /build/
 /dist/
+/syntok.egg-info/
 /venv/
 __pycache__/
