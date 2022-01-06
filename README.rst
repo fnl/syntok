@@ -133,19 +133,21 @@ Legal
 
 License: `MIT <http://opensource.org/licenses/MIT>`_
 
-Copyright (c) 2017-2021, Florian Leitner. All rights reserved.
+Copyright (c) 2017-2022, Florian Leitner. All rights reserved.
 
 Contributors
 ============
 
 - Koen Dercksen, @KDercksen, https://koendercksen.com/  
 - Sergiusz Bleja, @svenski 
+- Arjen P. de Vries, @arjenpdevries, http://www.cs.ru.nl/~arjen/
 
 Thank you!
 
 History
 =======
 
+- **1.3.3** splitting tokens around the zero-width space characater U+200B `#18`_
 - **1.3.2** bugfix for offset of not contractions; discussion in Issue `#15`_
 - **1.3.1** segmenting now occurs at semi-colons, too; discussion in Issue `#9`_
 - **1.2.2** bugfix for offsets in multi-nonword prefix tokens; Issue `#6`_
@@ -162,3 +164,4 @@ History
 .. _#6: https://github.com/fnl/syntok/issues/6
 .. _#9: https://github.com/fnl/syntok/issues/9
 .. _#15: https://github.com/fnl/syntok/issues/15
+.. _#18: https://github.com/fnl/syntok/pull/18
