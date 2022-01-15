@@ -29,8 +29,8 @@ Syntok is the successor of an earlier, very similar tool, segtok_, but has evolv
 For example, if a sentence terminal marker is not followed by a spacing character, segtok is unable to detect that as a terminal marker, while syntok has no problem segmenting that case (as it uses tokenization first, and does segmentation afterwards).
 In fact, I feel confident enough to just boldly claim syntok is the world's best sentence segmenter for at least English, Spanish, and German.
 
-Install
-=======
+Installation
+============
 
 To use this package, you minimally should have Python 3.6 or installed.
 As it uses the typing package, earlier versions are not supported.
@@ -51,8 +51,8 @@ Development
 ``syntok`` uses poetry_ as the build tool, and expects pyenv_ to provide the Python versions to test with tox_.
 Therefore, to develop ``syntok``, it is recommended that you install Poetry and pyenv, first.
 
-To run the test suite, you have to have flake8_, pytest_, and mypy_ installed (via ``poetry install``).
-The full tests in the proper environment works by running ``tox`` (i.e., you need GNU Make or something equivalent around) or have to call the three commands by hand::
+To run the full test suite, you have to install flake8_, pytest_, and mypy_ (via ``poetry install``).
+The tests in the proper Python version & environment are run via ``tox`` or by calling the three commands by hand::
 
    poetry run tox
 
@@ -142,9 +142,9 @@ Copyright (c) 2017-2022, Florian Leitner. All rights reserved.
 Contributors
 ============
 
-- Koen Dercksen, @KDercksen, https://koendercksen.com/  
-- Sergiusz Bleja, @svenski 
 - Arjen P. de Vries, @arjenpdevries, http://www.cs.ru.nl/~arjen/
+- Koen Dercksen, @KDercksen, https://koendercksen.com/
+- Sergiusz Bleja, @svenski
 
 Thank you!
 
