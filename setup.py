@@ -10,7 +10,7 @@ except IOError:
 
 setup(
     name='syntok',
-    version='1.3.3',
+    version='1.4.0',
     url='https://github.com/fnl/syntok',
     author='Florian Leitner',
     author_email='me@fnl.es',
@@ -23,9 +23,7 @@ setup(
     classifiers=[
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
         'Topic :: Scientific/Engineering :: Information Analysis',
         'Topic :: Software Development :: Libraries',
         'Topic :: Text Processing',

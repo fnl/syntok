@@ -5,9 +5,11 @@ syntok
 (a.k.a. segtok_ v2)
 
 .. image:: https://img.shields.io/pypi/v/syntok.svg
+    :alt: syntok version
     :target: https://pypi.python.org/pypi/syntok
 
 .. image:: https://travis-ci.org/fnl/syntok.svg?branch=master
+    :alt: syntok test status
     :target: https://travis-ci.org/fnl/syntok
 
 -------------------------------------------
@@ -30,32 +32,34 @@ In fact, I feel confident enough to just boldly claim syntok is the world's best
 Install
 =======
 
-To use this package, you minimally should have Python 3.5 or installed.
+To use this package, you minimally should have Python 3.6 or installed.
 As it uses the typing package, earlier versions are not supported.
 The easiest way to get ``syntok`` installed is using ``pip`` or any other package manager that works with PyPI::
 
     pip3 install syntok
 
-*Important*: If you are on a Linux machine and have problems installing the ``regex`` dependency of ``syntok``, make sure you have the ``python-dev`` and/or ``python3-dev`` packages installed to get the necessary headers to compile that package.
+*Important*: If you are on **Linux** and have problems installing the ``regex`` dependency of ``syntok``, make sure you have the ``python-dev`` and/or ``python3-dev`` packages installed to get the necessary headers to compile that package.
 
 Then try the command line tools on some plain-text files (e.g., this README) to see if ``syntok`` meets your needs::
 
     python3 -m syntok.segmenter README.rst
     python3 -m syntok.tokenizer README.rst
 
-Test Suite
-==========
+Development
+===========
 
-To run the test suite, you have to have flake8, pytest, and mypy installed (``pip3 install flake8 pytest mypy``).
+``syntok`` uses poetry_ as the build tool, and expects pyenv_ to provide the Python versions to test with tox_.
+Therefore, to develop ``syntok``, it is recommended that you install Poetry and pyenv, first.
 
-The testing environment works by running ``make`` targets (i.e., you need GNU Make or something equivalent around) or have to call the three commands by hand::
+To run the test suite, you have to have flake8_, pytest_, and mypy_ installed (via ``poetry install``).
+The full tests in the proper environment works by running ``tox`` (i.e., you need GNU Make or something equivalent around) or have to call the three commands by hand::
 
-   make check
+   poetry run tox
 
-   # OR
-   flake8 syntok  # make lint
-   mypy syntok    # make type
-   pytest syntok  # make test
+   # OR, manually:
+   flake8 syntok
+   mypy syntok
+   pytest syntok
 
 Usage
 =====
@@ -147,6 +151,7 @@ Thank you!
 History
 =======
 
+- **1.4.0** migrated to pyproject.toml and tox.ini, dropped Makefile builds and Py3.5 support
 - **1.3.3** splitting tokens around the zero-width space characater U+200B `#18`_
 - **1.3.2** bugfix for offset of not contractions; discussion in Issue `#15`_
 - **1.3.1** segmenting now occurs at semi-colons, too; discussion in Issue `#9`_
@@ -159,8 +164,14 @@ History
 - **1.0.1** fixing segmenter.analyze to preserve "n't" contractions, and improved the README and Tokenizer constructor API
 - **1.0.0** initial release
 
-.. _segtok: https://github.com/fnl/segtok
 .. _configuring the environment variable: https://docs.python.org/3/using/cmdline.html
+.. _flake8: https://flake8.pycqa.org/en/latest/
+.. _poetry: https://python-poetry.org/
+.. _segtok: https://github.com/fnl/segtok
+.. _mypy: http://mypy-lang.org/
+.. _pyenv: https://github.com/pyenv/pyenv
+.. _pytest: https://docs.pytest.org/en/latest/
+.. _tox: https://tox.wiki/en/latest/
 .. _#6: https://github.com/fnl/syntok/issues/6
 .. _#9: https://github.com/fnl/syntok/issues/9
 .. _#15: https://github.com/fnl/syntok/issues/15
