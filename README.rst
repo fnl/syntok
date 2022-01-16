@@ -58,6 +58,7 @@ The tests in the proper Python version & environment are run via ``tox`` or by c
    poetry run tox
 
    # OR, manually:
+   poetry shell
    flake8 syntok
    mypy syntok
    pytest syntok
