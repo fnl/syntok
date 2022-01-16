@@ -12,6 +12,10 @@ syntok
     :alt: syntok test status
     :target: https://travis-ci.org/fnl/syntok
 
+.. image:: https://github.com/fnl/syntok/actions/workflows/tox.yaml/badge.svg
+    :alt: tox build
+    :target: https://github.com/fnl/syntok/actions/workflows/tox.yaml
+
 -------------------------------------------
 Sentence segmentation and word tokenization
 -------------------------------------------
