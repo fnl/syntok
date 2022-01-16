@@ -8,10 +8,6 @@ syntok
     :alt: syntok version
     :target: https://pypi.python.org/pypi/syntok
 
-.. image:: https://travis-ci.org/fnl/syntok.svg?branch=master
-    :alt: syntok test status
-    :target: https://travis-ci.org/fnl/syntok
-
 .. image:: https://github.com/fnl/syntok/actions/workflows/tox.yaml/badge.svg
     :alt: tox build
     :target: https://github.com/fnl/syntok/actions/workflows/tox.yaml
