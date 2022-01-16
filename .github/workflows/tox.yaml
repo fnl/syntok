@@ -1,4 +1,4 @@
-name: Run tox
+name: tox build
 
 on: [push]
 
