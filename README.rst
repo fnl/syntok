@@ -50,6 +50,7 @@ Development
 
 ``syntok`` uses poetry_ as the build tool, and expects pyenv_ to provide the Python versions to test with tox_.
 Therefore, to develop ``syntok``, it is recommended that you install Poetry and pyenv, first.
+Install the Python versions that the local ``tox.ini`` uses, and set all of them as your local versions, for example: ``pyenv local 3.6.15 3.9.9``
 
 To run the full test suite, you have to install flake8_, pytest_, and mypy_ (via ``poetry install``).
 The tests in the proper Python version & environment are run via ``tox`` or by calling the three commands by hand::
