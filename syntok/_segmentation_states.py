@@ -258,7 +258,7 @@ class State(metaclass=ABCMeta):
         else:
             return ""
 
-    def __skip_bracketed_text(self) -> bool:
+    def _skip_bracketed_text(self) -> bool:
         """
         Move over bracketed text if not too long and not looking like a sentence,
         when next is an opening bracket.
@@ -334,7 +334,7 @@ class State(metaclass=ABCMeta):
         """Advance the queue, and also skip over bracketed text if applicable."""
         if self._move():
             if self.next_is_an_opening_bracket:
-                self.__skip_bracketed_text()
+                self._skip_bracketed_text()
 
         if not self.__queue:
             return self._fetch_next()
@@ -425,7 +425,7 @@ class State(metaclass=ABCMeta):
         token = None
 
         if self.next_is_an_opening_bracket and self.last not in State.terminals:
-            self.__skip_bracketed_text()
+            self._skip_bracketed_text()
         else:
             while self.next_is_a_post_terminal_symbol_part_of_sentence:
                 if not self._move():
@@ -463,6 +463,10 @@ class State(metaclass=ABCMeta):
 class FirstToken(State):
     def __next__(self) -> State:
         if not self.is_empty or self._fetch_next():
+            # If a sentence is opened by parenthesis, treat the whole as its own sentence.
+            if self.next_is_an_opening_bracket and self._skip_bracketed_text() and len(self._history) > 3:
+                return Terminal(self._stream, self._queue, self._history)
+
             self._move()  # Do not skip parenthesis if they open the sentence.
 
             if self.next_is_a_terminal:

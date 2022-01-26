@@ -71,19 +71,19 @@ And then there is the U.K. House of Commons.
 Now only this splits: the EU.
 A sentence ending in U.S. Another that will not split.
 12 monkeys ran into here.
-Nested
-(Parenthesis.
-(With words inside!
-(Right.))
-(More stuff.
-Uff, this is it!))
+Nested (Parenthesis. (With words inside! (Right.)) (More. This is it!))
 In the Big City.
+(This is a very long sentence inside parenthesis.
+Followed by another, so we want to split them.)
 How we got an A. Mathematics . dot times.
 An abbreviation at the end..
 This is a sentence terminal ellipsis...
 This is another sentence terminal ellipsis....
 An easy to handle G. species mention.
 Am 13. Jän. 2006 war es regnerisch.
+(Phil. 4:8)
+(Oh. Again!)
+Syntok even handles bible quotes!
 The basis for Lester B. Pearson's policy was later.
 This model was introduced by Dr. Edgar F. Codd after initial criticisms.
 This quote "He said it." is actually inside.
@@ -370,6 +370,15 @@ class TestSegmenter(TestCase):
         tokens = Tokenizer().split("This is abcf. (123) in here.")
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens], result)
+
+    def test_do_not_split_bible_citation(self):
+        tokens = Tokenizer().split(
+            "This is a bible quote? (Phil. 4:8) Yes, it is!"
+        )
+        result = segmenter.split(iter(tokens))
+        self.assertEqual(len(result[0]), 6)
+        self.assertEqual(len(result[1]), 5)
+        self.assertEqual(len(result[2]), 5)
 
     def test_do_not_split_short_text_inside_parenthesis(self):
         tokens = Tokenizer().split(
