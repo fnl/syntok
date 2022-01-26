@@ -153,6 +153,7 @@ Thank you!
 History
 =======
 
+- **1.4.1** support citations at sentence begin (e.g., Bible quotes) `#12`_
 - **1.4.0** migrated to pyproject.toml and tox.ini, dropped Makefile builds and Py3.5 support
 - **1.3.3** splitting tokens around the zero-width space characater U+200B `#18`_
 - **1.3.2** bugfix for offset of not contractions; discussion in Issue `#15`_
@@ -176,5 +177,6 @@ History
 .. _tox: https://tox.wiki/en/latest/
 .. _#6: https://github.com/fnl/syntok/issues/6
 .. _#9: https://github.com/fnl/syntok/issues/9
+.. _#12: https://github.com/fnl/syntok/pull/12
 .. _#15: https://github.com/fnl/syntok/issues/15
 .. _#18: https://github.com/fnl/syntok/pull/18

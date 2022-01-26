@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "syntok"
-version = "1.4.0"
+version = "1.4.1"
 description = "Text tokenization and sentence segmentation (segtok v2)."
 authors = ["Florian Leitner <me@fnl.es>"]
 license = "MIT"
@@ -14,6 +14,7 @@ tox = ">2"
 mypy = "*"
 pytest = ">4"
 flake8 = ">2"
+debugpy = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
