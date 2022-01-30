@@ -4,6 +4,7 @@ version = "1.4.2"
 description = "Text tokenization and sentence segmentation (segtok v2)."
 authors = ["Florian Leitner <me@fnl.es>"]
 license = "MIT"
+readme = "README.rst"
 
 [tool.poetry.dependencies]
 python = ">=3.6 <4.0"
