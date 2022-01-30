@@ -228,6 +228,7 @@ class State(metaclass=ABCMeta):
 
     @property
     def last(self) -> str:
+        """The last token processed and added to histroy, if any."""
         if len(self.__history):
             return self.__history[-1].value
         else:
@@ -257,6 +258,18 @@ class State(metaclass=ABCMeta):
             return self.__queue[closing_bracket + 1].value
         else:
             return ""
+
+    def __find_token_after_next(self) -> str:
+        """
+        Find the token after the next, if it exists.
+        """
+        len_q = len(self.__queue)
+
+        if len_q > 0:
+            if len_q > 1 or self._fetch_next():
+                return self.__queue[1].value
+
+        return ""
 
     def _skip_bracketed_text(self) -> bool:
         """
@@ -332,9 +345,8 @@ class State(metaclass=ABCMeta):
 
     def _move_and_skip_bracketed_text(self) -> bool:
         """Advance the queue, and also skip over bracketed text if applicable."""
-        if self._move():
-            if self.next_is_an_opening_bracket:
-                self._skip_bracketed_text()
+        if self._move() and self.next_is_an_opening_bracket:
+            self._skip_bracketed_text()
 
         if not self.__queue:
             return self._fetch_next()
@@ -405,9 +417,14 @@ class State(metaclass=ABCMeta):
             return self
 
         elif token_after in State.opening_brackets:
-            token = self.__find_next_token_after_bracket()
+            token_after_brackets = self.__find_next_token_after_bracket()
+            token_after_opening_bracket = self.__find_token_after_next()
 
-            if token[:1].islower() or token in State.inner_sentence_punctuation:
+            if token_after_brackets in State.inner_sentence_punctuation:
+                return self
+            elif token_after_opening_bracket.istitle():
+                return Terminal(self._stream, self._queue, self._history)
+            if token_after_brackets[:1].islower():
                 return self
             else:
                 return Terminal(self._stream, self._queue, self._history)
@@ -435,9 +452,8 @@ class State(metaclass=ABCMeta):
                     token = self.last
 
             if self.next_is_a_closing_quote and self.next_has_no_spacing:
-                if self._move():
-                    if token is None:
-                        token = self.last
+                if self._move() and token is None:
+                    token = self.last
 
             while self.next_is_a_post_terminal_symbol_part_of_sentence:
                 if not self._move():
@@ -464,9 +480,10 @@ class FirstToken(State):
     def __next__(self) -> State:
         if not self.is_empty or self._fetch_next():
             # If a sentence is opened by parenthesis, treat the whole as its own sentence.
-            if self.next_is_an_opening_bracket and self._skip_bracketed_text() and len(self._history) > 3:
+            if self.next_is_an_opening_bracket and self._skip_bracketed_text() and len(self._history) > 3 and not self.next_is_lowercase:
                 return Terminal(self._stream, self._queue, self._history)
 
+        if not self.is_empty or self._fetch_next():
             self._move()  # Do not skip parenthesis if they open the sentence.
 
             if self.next_is_a_terminal:

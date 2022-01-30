@@ -70,6 +70,12 @@ What about the E.U. High Court?
 And then there is the U.K. House of Commons.
 Now only this splits: the EU.
 A sentence ending in U.S. Another that will not split.
+(A parenthesis at sentence start.)
+Do not begin sentences with parenthesis.
+(As that ends with) a world of pain.
+Alexandri Aetoli Testimonia et Fragmenta.
+Studi e Testi 15.
+(1999) This (1999) gets merged because indistinguishable from enumeration.
 12 monkeys ran into here.
 Nested (Parenthesis. (With words inside! (Right.)) (More. This is it!))
 In the Big City.
@@ -380,14 +386,13 @@ class TestSegmenter(TestCase):
         self.assertEqual(len(result[1]), 5)
         self.assertEqual(len(result[2]), 5)
 
-    def test_do_not_split_short_text_inside_parenthesis(self):
-        tokens = Tokenizer().split(
-            "This is (Proc. ABC with Abs. Reg. Compliance) not here."
-        )
+    def test_split_self_standing_parenthesis(self):
+        tokens = Tokenizer().split("Studi e Testi 15. (1999)")
         result = segmenter.split(iter(tokens))
-        self.assertEqual([tokens], result)
+        self.assertEqual(len(result[0]), 5)
+        self.assertEqual(len(result[1]), 3)
 
-    def test_do_not_split_short_text_inside_parenthesis2(self):
+    def test_do_not_split_short_text_inside_parenthesis(self):
         tokens = Tokenizer().split(
             "This is (Proc. ABC with Abs. Reg. Compliance) not here."
         )
@@ -425,6 +430,15 @@ class TestSegmenter(TestCase):
         sep2 = 12
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens[:sep1], tokens[sep1:sep2], tokens[sep2:]], result)
+
+    def test_split_sentence_with_parenthesis_at_start(self):
+        tokens = Tokenizer().split("A sentences here. (This is) a world of pain.")
+        sep = 4
+        result = segmenter.split(iter(tokens))
+        self.assertEqual(len(result), 2)
+        self.assertEqual(len(result[0]), 4)
+        self.assertEqual(len(result[1]), 9)
+        self.assertEqual([tokens[:sep], tokens[sep:]], result)
 
     def test_split_with_complex_parenthesis_structure(self):
         tokens = Tokenizer().split("What the heck? (A) First things here.")

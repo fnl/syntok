@@ -153,6 +153,7 @@ Thank you!
 History
 =======
 
+- **1.4.2** improved handling of parenthesis at start of sentences and bugfix for citations at end of texts `#19`_
 - **1.4.1** support citations at sentence begin (e.g., Bible quotes) `#12`_
 - **1.4.0** migrated to pyproject.toml and tox.ini, dropped Makefile builds and Py3.5 support
 - **1.3.3** splitting tokens around the zero-width space characater U+200B `#18`_
@@ -180,3 +181,4 @@ History
 .. _#12: https://github.com/fnl/syntok/pull/12
 .. _#15: https://github.com/fnl/syntok/issues/15
 .. _#18: https://github.com/fnl/syntok/pull/18
+.. _#19: https://github.com/fnl/syntok/issues/19
