@@ -145,6 +145,7 @@ Contributors
 ============
 
 - Arjen P. de Vries, @arjenpdevries, http://www.cs.ru.nl/~arjen/
+- Bastian Zimmermann, @BastianZim
 - Koen Dercksen, @KDercksen, https://koendercksen.com/
 - Sergiusz Bleja, @svenski
 
