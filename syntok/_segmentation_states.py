@@ -188,14 +188,13 @@ class State(metaclass=ABCMeta):
         return not self.is_empty and self.__queue[0].value.isnumeric()
 
     @property
-    def next_is_alphanumeric(self) -> bool:
+    def next_is_alphanumeric_containing_numeric_char(self) -> bool:
         if self.is_empty:
             return False
 
         v = self.__queue[0].value
         return (
             any(c.isnumeric() for c in v)
-            and any(c.isalpha() for c in v)
             and v.isalnum()
         )
 
@@ -389,7 +388,7 @@ class State(metaclass=ABCMeta):
         ):
             return self
 
-        elif token_before == "no" and self.next_is_alphanumeric:
+        elif token_before in ("no", "No", "NO") and self.next_is_alphanumeric_containing_numeric_char:
             return self
 
         elif self.next_is_numeric and self.next_has_no_spacing:

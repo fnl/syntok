@@ -144,6 +144,7 @@ In line with the literature on DLB.
 This is verse 14;45 in the test;
 Splitting on semi-colons.
 The discovery of low-mass nulceli (AGN; NGC 4395 and POX 52; Filippenko & Sargent 1989; Kunth et al. 1987) triggered a quest; it has yielded today more than 500 sources.
+The Company is the No. 2 and No. 3 largest chain in the U.S. and Canada, respectively, by number of stores.
 Always last, clear closing example."""
 
 SENTENCES = OSPL.split("\n")
@@ -378,9 +379,7 @@ class TestSegmenter(TestCase):
         self.assertEqual([tokens], result)
 
     def test_do_not_split_bible_citation(self):
-        tokens = Tokenizer().split(
-            "This is a bible quote? (Phil. 4:8) Yes, it is!"
-        )
+        tokens = Tokenizer().split("This is a bible quote? (Phil. 4:8) Yes, it is!")
         result = segmenter.split(iter(tokens))
         self.assertEqual(len(result[0]), 6)
         self.assertEqual(len(result[1]), 5)
@@ -463,12 +462,16 @@ class TestSegmenter(TestCase):
         self.assertEqual([tokens], result)
 
     def test_no_split_on_strange_text(self):
-        tokens = Tokenizer().split("Four patients (67%) with an average response of 3.3 mos. (range 6 wks. to 12 mos.)")
+        tokens = Tokenizer().split(
+            "Four patients (67%) with an average response of 3.3 mos. (range 6 wks. to 12 mos.)"
+        )
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens], result)
 
     def test_no_split_on_strange_text2(self):
-        tokens = Tokenizer().split("Packed cells (PRBC) for less than 20,000 thousand/micro.L, repsectively.")
+        tokens = Tokenizer().split(
+            "Packed cells (PRBC) for less than 20,000 thousand/micro.L, repsectively."
+        )
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens], result)
 
