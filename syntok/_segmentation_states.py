@@ -76,7 +76,6 @@ class State(metaclass=ABCMeta):
     univ Univ Urt vda Vda vol Vol vs vta zB zit zzgl
     Mon lun Tue mar Wed mie mié Thu jue Fri vie Sat sab Sun dom
     """.split()
-        + list(months)
     )
     """Abbreviations with no dots inside."""
 
@@ -405,6 +404,9 @@ class State(metaclass=ABCMeta):
             return self
 
         elif token_before.isnumeric() and self.next_is_month_abbreviation:
+            return self
+
+        elif token_before in State.months and self.next_is_numeric:
             return self
 
         elif "." in token_before and token_after != ".":
