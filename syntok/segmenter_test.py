@@ -276,6 +276,22 @@ class TestSegmenter(TestCase):
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens[:sep], tokens[sep:]], result)
 
+    def test_sentences_ending_with_false_positive_month_abbreviation_1(self):
+        tokens = Tokenizer().split(
+            "Some of the cookies are essential for parts of the site to operate and have already been set. You may delete and block all cookies from this site, but if you do, parts of the site may not work."
+        )
+        sep = 19
+        result = segmenter.split(iter(tokens))
+        self.assertEqual([tokens[:sep], tokens[sep:]], result)
+
+    def test_sentences_ending_with_false_positive_month_abbreviation_2(self):
+        tokens = Tokenizer().split(
+            "The sharpshooter appears to be checked out on his Kings experience, and an argument could easily be raised that he should have been moved two years ago. Now, his $23 million salary will be a tough pill for teams to swallow, even if there is decent chance of a solid bounce-back year at a new destination."
+        )
+        sep = 29
+        result = segmenter.split(iter(tokens))
+        self.assertEqual([tokens[:sep], tokens[sep:]], result)
+
     def test_sentences_with_enumerations(self):
         tokens = Tokenizer().split("1. This goes first. 2. And here thereafter.")
         sep = 6

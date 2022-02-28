@@ -76,7 +76,6 @@ class State(metaclass=ABCMeta):
     univ Univ Urt vda Vda vol Vol vs vta zB zit zzgl
     Mon lun Tue mar Wed mie mié Thu jue Fri vie Sat sab Sun dom
     """.split()
-        + list(months)
     )
     """Abbreviations with no dots inside."""
 
