@@ -87,6 +87,7 @@ This is a sentence terminal ellipsis...
 This is another sentence terminal ellipsis....
 An easy to handle G. species mention.
 Am 13. Jän. 2006 war es regnerisch.
+And on Jan. 22, 2022 it was, too.
 (Phil. 4:8)
 (Oh. Again!)
 Syntok even handles bible quotes!

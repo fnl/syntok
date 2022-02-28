@@ -407,6 +407,9 @@ class State(metaclass=ABCMeta):
         elif token_before.isnumeric() and self.next_is_month_abbreviation:
             return self
 
+        elif token_before in State.months and self.next_is_numeric:
+            return self
+
         elif "." in token_before and token_after != ".":
             return self
 
