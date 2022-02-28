@@ -146,6 +146,7 @@ Contributors
 
 - Arjen P. de Vries, @arjenpdevries, http://www.cs.ru.nl/~arjen/
 - Bastian Zimmermann, @BastianZim
+- Péter Láng, @peter-lang-dealogic
 - Koen Dercksen, @KDercksen, https://koendercksen.com/
 - Sergiusz Bleja, @svenski
 
@@ -154,6 +155,7 @@ Thank you!
 History
 =======
 
+- **1.4.3** bug fixes: under-splitting at month abbreviations `#22`_ and over-splitting at "no." abbreviations `#21`_
 - **1.4.2** improved handling of parenthesis at start of sentences and bugfix for citations at end of texts `#19`_
 - **1.4.1** support citations at sentence begin (e.g., Bible quotes) `#12`_
 - **1.4.0** migrated to pyproject.toml and tox.ini, dropped Makefile builds and Py3.5 support
@@ -183,3 +185,5 @@ History
 .. _#15: https://github.com/fnl/syntok/issues/15
 .. _#18: https://github.com/fnl/syntok/pull/18
 .. _#19: https://github.com/fnl/syntok/issues/19
+.. _#21: https://github.com/fnl/syntok/issues/21
+.. _#22: https://github.com/fnl/syntok/issues/22
