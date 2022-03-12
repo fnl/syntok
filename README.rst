@@ -155,6 +155,7 @@ Thank you!
 History
 =======
 
+- **1.4.4** bug fixes: support for single letter consontant abbreviations, "Min.", and "Sen." `#26`_
 - **1.4.3** bug fixes: under-splitting at month abbreviations `#22`_ and over-splitting at "no." abbreviations `#21`_
 - **1.4.2** improved handling of parenthesis at start of sentences and bugfix for citations at end of texts `#19`_
 - **1.4.1** support citations at sentence begin (e.g., Bible quotes) `#12`_
@@ -187,3 +188,4 @@ History
 .. _#19: https://github.com/fnl/syntok/issues/19
 .. _#21: https://github.com/fnl/syntok/issues/21
 .. _#22: https://github.com/fnl/syntok/issues/22
+.. _#26: https://github.com/fnl/syntok/issues/26

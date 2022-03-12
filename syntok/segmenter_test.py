@@ -258,6 +258,19 @@ class TestSegmenter(TestCase):
         result = segmenter.split(iter(tokens))
         self.assertEqual([tokens[:sep], tokens[sep:]], result)
 
+    def test_sentences_with_common_abbreviations(self):
+        tokens = Tokenizer().split("Warran supports Min. Wage Workers. Sen. Elizabeth Warren called on Biden.")
+        sep = 7
+        result = segmenter.split(iter(tokens))
+        self.assertEqual([tokens[:sep], tokens[sep:]], result)
+
+    def test_sentences_with_single_letter_abbreviations(self):
+        tokens = Tokenizer().split(
+            "The case is Nath v. Lightspeed Commerce"
+        )
+        result = segmenter.split(iter(tokens))
+        self.assertEqual([tokens], result)
+
     def test_sentences_with_nasty_abbreviations(self):
         tokens = Tokenizer().split(
             "This is Capt. Motto here. And here is Sra. Smithers."

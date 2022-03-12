@@ -10,7 +10,7 @@ except IOError:
 
 setup(
     name='syntok',
-    version='1.4.3',
+    version='1.4.4',
     url='https://github.com/fnl/syntok',
     author='Florian Leitner',
     author_email='me@fnl.es',

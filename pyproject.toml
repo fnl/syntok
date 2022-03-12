@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "syntok"
-version = "1.4.3"
+version = "1.4.4"
 description = "Text tokenization and sentence segmentation (segtok v2)."
 authors = ["Florian Leitner <me@fnl.es>"]
 license = "MIT"

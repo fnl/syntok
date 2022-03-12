@@ -71,8 +71,8 @@ class State(metaclass=ABCMeta):
     bmo Bmo brig Bd Brig bsp Bsp bspw bzgl bzw ca cap capt Capt cf cmdt Cmdt cnel Cnel Co col Col Corp
     de Dr dgl dt emp en es etc evtl excl exca Exca excmo Excmo exsmo Exsmo ff fig Fig figs Figs fr Fr
     gal gen Gen ggf gral Gral GmbH gob Gob Hd hno Hno hnos Hnos Inc incl inkl lic Lic lit ldo Ldo Ltd
-    mag Mag max med Med min Mio mos Mr mr Mrd Mrs mrs Ms ms Mt mt MwSt nat Nat Nr nr ntra Ntra ntro Ntro
-    pag phil prof Prof rer Rer resp sci Sci Sr sr Sra sra Srta srta St st synth tab Tab tel Tel
+    mag Mag max med Med Min min Mio mos Mr mr Mrd Mrs mrs Ms ms Mt mt MwSt nat Nat Nr nr ntra Ntra ntro Ntro
+    pag phil prof Prof rer Rer resp sci Sci Sen Sr sr Sra sra Srta srta St st synth tab Tab tel Tel
     univ Univ Urt vda Vda vol Vol vs vta zB zit zzgl
     Mon lun Tue mar Wed mie mié Thu jue Fri vie Sat sab Sun dom
     """.split()
@@ -381,6 +381,7 @@ class State(metaclass=ABCMeta):
             and self.next_is_sentence_starter
         ):  # not a single roman or letter char sentences, and a clear sentence starter
             return Terminal(self._stream, self._queue, self._history)
+            # return Terminal ==> split
 
         elif token_before in State.abbreviations and token_after not in (
             self.closing_brackets or self.closing_quotes
@@ -415,6 +416,9 @@ class State(metaclass=ABCMeta):
         elif (
             isinstance(self, FirstToken) or token_before.isupper()
         ) and self.is_single_letter_or_roman_numeral(token_before):
+            return self
+
+        elif self.is_single_consonant(token_before):
             return self
 
         elif token_after in State.opening_brackets:
@@ -475,6 +479,10 @@ class State(metaclass=ABCMeta):
     @staticmethod
     def is_single_letter_or_roman_numeral(token):
         return len(token) == 1 or token in State.roman_numerals
+
+    @staticmethod
+    def is_single_consonant(token_before):
+        return len(token_before) == 1 and token_before.isalpha() and token_before not in State.vowels
 
 
 class FirstToken(State):
