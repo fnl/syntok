@@ -72,7 +72,7 @@ Command-line
 ------------
 
 After installing the package, two command-line usages will be available, ``python -m syntok.segmenter`` and ``python -m syntok.tokenizer``.
-Each takes [UTF-8 encoded] plain-text files (or STDIN) as input and transforms that into newline-separated sentences or space-separated tokens, respectively.
+Each takes [UTF-8 encoded] plain-text files (or STDIN until EOF (CTRL-D)) as input and transforms that into newline-separated sentences or space-separated tokens, respectively.
 You can control Python3's file ``open`` encoding by `configuring the environment variable`_ ``PYTHONIOENCODING`` to your needs (e.g. ``export PYTHONIOENCODING="utf-16-be"``).
 The tokenizer produces single-space separated tokens for each input line.
 The segmenter produces line-segmented sentences for each input file (or after STDIN closes).
