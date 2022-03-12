@@ -74,7 +74,7 @@ class State(metaclass=ABCMeta):
     mag Mag max med Med Min min Mio mos Mr mr Mrd Mrs mrs Ms ms Mt mt MwSt nat Nat Nr nr ntra Ntra ntro Ntro
     pag phil prof Prof rer Rer resp sci Sci Sen Sr sr Sra sra Srta srta St st synth tab Tab tel Tel
     univ Univ Urt vda Vda vol Vol vs vta zB zit zzgl
-    Mon lun Tue mar Wed mie mié Thu jue Fri vie Sat sab Sun dom
+    Mo Mon lun Di Tue mar Mi Wed mie mié Do Thu jue Fr Fri vie Sa Sat sab So Sun dom
     """.split()
     )
     """Abbreviations with no dots inside."""
